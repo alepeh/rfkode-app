@@ -1,0 +1,36 @@
+{
+  "name": "rfkode-app",
+  "version": "0.0.1",
+  "description": "Data capture pwa for chimney sweeps",
+  "scripts": {
+    "build": "polymer build --auto-base-path && gulp prpl-server",
+    "serve": "prpl-server --root server/build",
+    "start": "polymer serve | browser-sync start --proxy localhost:8081 --open --files \"**/*.js\" --files \"**/*.html\" --files \"**/*.css\"",
+    "test:unit": "polymer test --module-resolution=node --npm"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alepeh/rfkode-app.git"
+  },
+  "author": "Alexander Pehm",
+  "homepage": "https://github.com/alepeh/rfkode-app#readme",
+  "devDependencies": {
+    "@polymer/test-fixture": "^4.0.2",
+    "browser-sync": "^2.26.7",
+    "chai": "^4.2.0",
+    "del": "^5.0.0",
+    "gulp": "^4.0.2",
+    "gulp-rename": "^1.4.0",
+    "gulp-replace": "^1.0.0",
+    "mocha": "^6.2.0",
+    "polymer-cli": "^1.9.11",
+    "polyserve": "^0.27.15",
+    "prpl-server": "^1.4.0",
+    "wct-mocha": "^1.0.1"
+  },
+  "dependencies": {
+    "@polymer/polymer": "^3.3.0",
+    "@webcomponents/webcomponentsjs": "^2.2.10",
+    "lit-element": "^2.2.1"
+  }
+}

@@ -5,21 +5,22 @@
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
     <title>rfk-app test</title>
-    <script src="../node_modules/mocha/mocha.js"></script>
-    <script src="../node_modules/chai/chai.js"></script>
-    <script src="../node_modules/wct-mocha/wct-mocha.js"></script>
+    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+    <script src="../../node_modules/mocha/mocha.js"></script>
+    <script src="../../node_modules/chai/chai.js"></script>
+    <script src="../../node_modules/wct-mocha/wct-mocha.js"></script>
   </head>
   <body>
 
     <test-fixture id="BasicTestFixture">
       <template>
-        <rfk-app></rfk-app>
+        <rfk-login-form></rfk-login>
       </template>
     </test-fixture>
 
     <script type="module">
       import '@polymer/test-fixture';
-      import '../src/components/rfk-app.js'
+      import '../../src/components/rfk-login-form.js'
 
       suite('rfk-app', () => {
         let el;
@@ -29,10 +30,12 @@
           return el.updateComplete;
         });
 
-        test('app displays greeting', () => {
+        test('login form input fields rendered', () => {
           const elementShadowRoot = el.shadowRoot;
-          const elementHeader = elementShadowRoot.querySelector('h1');
-          assert.equal(elementHeader.innerHTML, 'Hello World');
+          const usernameField = elementShadowRoot.querySelector('#username');
+          const passwordField = elementShadowRoot.querySelector('#password');
+          assert.exists(usernameField);
+          assert.exists(passwordField);
         });
       });
     </script>

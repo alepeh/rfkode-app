@@ -42,6 +42,10 @@ class Database {
         })
     }
 
+    put(document){
+        return this.localDb.put(document);
+    }
+
     getDocument(id){
         return this.localDb.get(id);
     }

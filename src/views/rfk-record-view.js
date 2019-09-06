@@ -75,7 +75,7 @@ class RfkRecordView extends PageViewElement {
                 </div>
             </div>
             <footer>
-                <vaadin-button id="saveBtn" disabled>Save</vaadin-button>
+                <vaadin-button id="saveBtn" disabled @click="${() => this._save()}">Save</vaadin-button>
             </footer>
             `;
         } else {
@@ -85,8 +85,12 @@ class RfkRecordView extends PageViewElement {
 
     recordUpdated(updateEvent){
         this.shadowRoot.getElementById('saveBtn').removeAttribute("disabled");
-        console.log(updateEvent.field);
+        this.recordData[updateEvent.field] = updateEvent.value;
+        console.dir(this.recordData);
+    }
 
+    _save(){
+        db.put(this.recordData);
     }
     
 }

@@ -2,10 +2,6 @@ import { db } from '../components/database.js';
 import { html } from 'lit-element'
 import { PageViewElement } from '../components/page-view-element';
 import { SharedStyles } from '../components/shared-styles.js';
-import { store } from '../store.js';
-import { navigate } from '../actions/app.js';
-import { installRouter } from 'pwa-helpers/router.js';
-
 
 class RfkTable extends PageViewElement {
     static get styles() {
@@ -49,15 +45,6 @@ class RfkTable extends PageViewElement {
             this.records = records;
             console.dir(records);
         });
-    }
-
-    onAction(action, id){
-        //store.dispatch(navigate("/record-form?tableName=" + this.tableName + (id ? '&recordId=' + id : '') + '&action=' + action));
-        //window.location = "/record-form?tableName=" + this.schema._id + (id ? '&recordId=' + id : '') + '&action=' + action;
-    }
-
-    firstUpdated() {
-        //installRouter((location) => store.dispatch(navigate(decodeURIComponent(location.pathname))));
     }
 
     render() {

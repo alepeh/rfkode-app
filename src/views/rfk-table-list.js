@@ -20,10 +20,16 @@ class RfkTableList extends PageViewElement {
 
   connectedCallback() {
     super.connectedCallback();
-    db.allSchemas().then((docs => {
-      this.schemas = docs.rows;
-    }));
   }
+
+  attributeChangedCallback(name,oldValue, newValue){
+    super.attributeChangedCallback(name, oldValue, newValue);
+    if(name === 'active' && newValue != null){
+      db.allSchemas().then((docs => {
+        this.schemas = docs.rows;
+      }));
+    }
+}
 
   render() {
     return html`

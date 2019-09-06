@@ -24,7 +24,7 @@ export class RfkRecordForm extends LitElement {
         return html`
         ${Object.keys(this.schema.jsonSchema.properties).map(
             (row) => html`
-            <vaadin-text-field label=${row} id="${row}" .value=${this.recordData ? this.recordData[row] : ''} @change=${e => this.inputChanged(e,row.name)}>
+            <vaadin-text-field label=${row} id="${row}" .value=${this.recordData ? this.recordData[row] : ''} @change=${e => this.inputChanged(e,row)}>
             </vaadin-text-field>
           `
         )}
@@ -33,7 +33,7 @@ export class RfkRecordForm extends LitElement {
 
     inputChanged(e,field){
         let updateEvent = new CustomEvent('record-updated', {
-            detail: {field: field, vaue: e.target.value},
+            detail: {field: field, value: e.target.value},
             bubbles: true
         });
         this.dispatchEvent(updateEvent);

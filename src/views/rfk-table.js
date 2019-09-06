@@ -1,7 +1,11 @@
-import { dbApiClient } from '../components/ApiClientFactory.js';
+import { db } from '../components/database.js';
 import { html } from 'lit-element'
 import { PageViewElement } from '../components/page-view-element';
 import { SharedStyles } from '../components/shared-styles.js';
+import { store } from '../store.js';
+import { navigate } from '../actions/app.js';
+import { installRouter } from 'pwa-helpers/router.js';
+
 
 class RfkTable extends PageViewElement {
     static get styles() {
@@ -13,6 +17,7 @@ class RfkTable extends PageViewElement {
     static get properties(){
         return {
             tableName : {type: String},
+            schema : { type :Object },
             records : { type: Object }
         }
     }
@@ -36,19 +41,23 @@ class RfkTable extends PageViewElement {
     }
 
     async getResource(name){
-        await dbApiClient().fetchResourceSchema(name)
-            .then((schema) => {
-                this.schema = schema;
-            });
-        await dbApiClient().fetchResourceData(name, this.order)
-            .then((data) => {
-                this.records = data;
-            });
+        await db.getDocument(name).then((schema) => {
+            this.schema = schema;
+            this.tableName = schema.name;
+        })
+        await db.allDocsOfSchema(name).then((records) => {
+            this.records = records;
+            console.dir(records);
+        });
     }
 
     onAction(action, id){
-        //store.dispatch(navigate("/form?tableName=" + this.tableName + (id ? '&recordId=' + id : '') + '&action=' + action));
-        document.location = "/record-form?tableName=" + this.tableName + (id ? '&recordId=' + id : '') + '&action=' + action;
+        //store.dispatch(navigate("/record-form?tableName=" + this.tableName + (id ? '&recordId=' + id : '') + '&action=' + action));
+        //window.location = "/record-form?tableName=" + this.schema._id + (id ? '&recordId=' + id : '') + '&action=' + action;
+    }
+
+    firstUpdated() {
+        //installRouter((location) => store.dispatch(navigate(decodeURIComponent(location.pathname))));
     }
 
     render() {
@@ -57,23 +66,25 @@ class RfkTable extends PageViewElement {
                 <h2>Table ${this.tableName}</h2>
                 <table>
                 <tr>
-
-                ${this.schema.field.map(
+                ${Object.keys(this.schema.jsonSchema.properties).map(
                   (field) => html`
-                  <th id=${field.name}>${field.name}</th>
+                  <th id=${field}>${field}</th>
                   `
                 )}
                 </tr>
-                ${this.records.resource.map(
-                    (resource) => html`
-                    <tr @click=${_ => this.onAction('edit',resource.ID)}>
-                    ${Object.values(resource).map(
-                        (row) => html`
-                        <td>${row}</td>
-                    `)}
+                ${this.records.rows.map(
+                    (row) => html`
+                    <tr>
+                    <a href="/record-form?tableName=${this.schema._id + '&recordId=' + row.doc._id + '&action=edit'}">
+                    ${Object.keys(this.schema.jsonSchema.properties).map(
+                        (field) => html`
+                    <td>${row.doc[field]}</td>`
+                )}  </a>
                     </tr>
                     `
                   )}
+                <td>
+                </td>
                   </table>
             </section>
             `;

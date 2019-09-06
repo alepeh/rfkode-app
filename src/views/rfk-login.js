@@ -1,6 +1,8 @@
 import { html, css } from 'lit-element';
 import { PageViewElement } from '../components/page-view-element.js';
-import { RfkLoginForm } from '../components/rfk-login-form.js'
+import "@vaadin/vaadin-text-field/vaadin-password-field.js";
+import "@vaadin/vaadin-button/vaadin-button.js";
+import { db } from "../components/database.js";
 // These are the shared styles needed by this element.
 import { SharedStyles } from '../components/shared-styles.js';
 
@@ -24,25 +26,36 @@ class RfkLogin extends PageViewElement {
     ];
   }
 
+  constructor(){
+    super();
+    this.username = '';
+    this.password = '';
+  }
+
   render() {
     return html`
       <section>
         <h2>Login</h2>
         <div style='{margin: 0 auto;}'>
-          <rfk-login-form
-          @user-loggedin="${e => this._userLoggedIn(e)}">
-          </rfk-login-form>
+        <vaadin-text-field label="Username" id="username" .value="${this.username}">
+        </vaadin-text-field>
+        <vaadin-password-field label="Password" id="password" .value="${this.password}">
+        </vaadin-password-field>
+        <vaadin-button @click=${this._login}>Login</vaadin-button>
         </div>
 
       </section>
     `;
   }
 
-  _userLoggedIn(e) {
-    console.log("User logged in");
-    store.dispatch(login(e.detail.username, e.detail.token))
-    store.dispatch(navigate(decodeURIComponent('#table-list')));
+  _login(){
+    this.username = this.shadowRoot.getElementById("username").value
+    this.password = this.shadowRoot.getElementById("password").value
+    db.sync(this.username, this.password).then(() => {
+      console.log("User logged in");
+      store.dispatch(login())
+      store.dispatch(navigate(decodeURIComponent('#table-list')));
+    });
   }
-
 }
 window.customElements.define('rfk-login', RfkLogin);

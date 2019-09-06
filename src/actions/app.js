@@ -37,7 +37,7 @@ const loadPage = (page) => (dispatch) => {
           });
           break;
         case 'record-form':
-            import('../views/rfk-record-form').then((module) => {
+            import('../views/rfk-record-view').then((module) => {
               // Put code in here that you want to run every time when
               // navigating to view1 after my-view1.js is loaded.
             });

@@ -69,7 +69,7 @@ class RfkRecordView extends PageViewElement {
             <div id="content-container">
                 <div id="content-wrap">
                     <rfk-record-form @record-updated="${(e) => { this.recordUpdated(e.detail) }}" 
-                        schema='${JSON.stringify(this.schema)}' 
+                        schema='${JSON.stringify(this.schema)}'
                         recordData='${JSON.stringify(this.recordData)}'>
                     </rfk-record-form>
                 </div>

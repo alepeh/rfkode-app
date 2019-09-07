@@ -50,7 +50,7 @@ class RfkTable extends PageViewElement {
     render() {
         return html`
             <section>
-                <h2>Table ${this.tableName}</h2>
+                <h2>Table ${this.tableName} <a href="/record-form?tableName=schema:schema:v1&recordId=${this.schema._id}&action=edit}">Edit</a></h2>
                 <table>
                 <tr>
                 ${Object.keys(this.schema.jsonSchema.properties).map(

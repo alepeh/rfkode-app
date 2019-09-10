@@ -1,6 +1,7 @@
 import { html, css, LitElement } from "lit-element";
 import "@vaadin/vaadin-text-field/vaadin-password-field.js";
-import "@vaadin/vaadin-text-field/vaadin-text-area.js"
+import "@vaadin/vaadin-text-field/vaadin-text-area.js";
+import "@vaadin/vaadin-upload/vaadin-upload.js";
 
 export class RfkRecordForm extends LitElement {
 
@@ -44,6 +45,10 @@ export class RfkRecordForm extends LitElement {
                     <vaadin-text-area label=${id} id=${id} .value=${this.recordData ? JSON.stringify(data, null, '\t') : ''} @change=${e => this.inputChanged(JSON.parse(e.target.value),id)}>
                     </vaadin-text-area>
                 `;
+            case 'file' :
+                return html`
+                    <label for=${id}>${id}</label>
+                    <input type="file" id=${id} @change=${e => this.fileSelected(e,id)}></input>`;
             default: 
                 return html`
                     <vaadin-text-field label=${id} id="${id}" .value=${this.recordData ? data : ''} @change=${e => this.inputChanged(e.target.value,id)}>
@@ -54,6 +59,15 @@ export class RfkRecordForm extends LitElement {
     inputChanged(val,field){
         let updateEvent = new CustomEvent('record-updated', {
             detail: {field: field, value: val},
+            bubbles: true
+        });
+        this.dispatchEvent(updateEvent);
+    }
+
+    fileSelected(e,field){
+        let file = this.shadowRoot.getElementById(field).files[0]
+        let updateEvent = new CustomEvent('record-attachment-updated', {
+            detail: {field: field, value: file},
             bubbles: true
         });
         this.dispatchEvent(updateEvent);

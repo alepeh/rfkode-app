@@ -6,7 +6,7 @@ export const CLOSE_SNACKBAR = 'CLOSE_SNACKBAR';
 
 export const navigate = (path) => (dispatch) => {
   // Extract the page name from path.
-  const page = path === '/' ? 'login' : path.slice(1);
+  const page = path === '/' ? 'table-list' : path.slice(1);
 
   // Any other info you might want to extract from the path (like page type),
   // you can do here
@@ -18,8 +18,8 @@ export const navigate = (path) => (dispatch) => {
 
 const loadPage = (page) => (dispatch) => {
   switch(page) {
-    case 'login':
-      import('../views/rfk-login.js').then((module) => {
+    case 'settings':
+      import('../views/rfk-settings-view').then((module) => {
         // Put code in here that you want to run every time when
         // navigating to view1 after my-view1.js is loaded.
       });
@@ -44,7 +44,7 @@ const loadPage = (page) => (dispatch) => {
             break;
     default:
       page = 'view404';
-      import('../views/my-view404.js');
+      import('../views/my-view404');
   }
   dispatch(updatePage(page));
 };

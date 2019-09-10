@@ -48,14 +48,14 @@ class RfkApp extends connect(store)(LitElement) {
               .opened="${this._drawerOpened}"
               @opened-changed="${this._drawerOpenedChanged}">
               <nav class="drawer-list">
-              <a href="/login">Login</a>
+              <a href="/settings">Settings</a>
               <a href="/table-list">Table List</a>
             </nav>
         </app-drawer>
     
           <!-- Main content -->
           <main role="main" class="main-content">
-            <rfk-login class="page" ?active="${this._page === 'login'}"></rfk-login>
+            <rfk-settings-view class="page" ?active="${this._page === 'settings'}"></rfk-settings-view>
             <rfk-table-list class="page" ?active="${this._page === 'table-list'}"></rfk-table-list>
             <rfk-table class="page" ?active="${this._page === 'table'}"></rfk-table>
             <rfk-record-view class="page" ?active="${this._page === 'record-form'}"></rfk-record-form>

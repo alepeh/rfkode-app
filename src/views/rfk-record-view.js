@@ -69,6 +69,7 @@ class RfkRecordView extends PageViewElement {
             <div id="content-container">
                 <div id="content-wrap">
                     <rfk-record-form @record-updated="${(e) => { this.recordUpdated(e.detail) }}" 
+                        @record-attachment-updated=${(e) => { this.recordAttachmentUpdated(e.detail) }}"
                         schema='${JSON.stringify(this.schema)}'
                         recordData='${JSON.stringify(this.recordData)}'>
                     </rfk-record-form>
@@ -84,13 +85,61 @@ class RfkRecordView extends PageViewElement {
     }
 
     recordUpdated(updateEvent){
-        this.shadowRoot.getElementById('saveBtn').removeAttribute("disabled");
+        this._enableSaveButton();
         this.recordData[updateEvent.field] = updateEvent.value;
         console.dir(this.recordData);
     }
 
+    recordAttachmentUpdated(updateEvent){
+        console.dir(updateEvent);
+        console.log("Id: " + this.recordData._id);
+        let attachment = {};
+        attachment[updateEvent.field] = { //filename
+            content_type: updateEvent.value.type,
+            data: updateEvent.value
+        }; 
+        this.recordData._attachments = attachment;
+        db.put(this.recordData).then((doc) => {
+            this.recordData._rev = doc.rev;
+            console.log("File saved as attachment");
+        }).catch((err) => {
+            console.log(err);
+        });
+    }
+
     _save(){
-        db.put(this.recordData);
+        db.put(this.recordData).then((doc) => {
+            console.log(doc);
+            this.recordData._rev = doc.rev;
+            this._saveSuccessful();
+        }).catch((error) => {
+            console.error(error);
+            this._errorSaving();
+        });
+    }
+
+    _saveSuccessful(){
+        this._getSaveButton().innerHTML = `Saved`;
+        this._disableSaveButton();
+    }
+
+    _errorSaving(){
+        this._getSaveButton().innerHTML = `Error`;
+        window.setTimeout(() =>
+            this._enableSaveButton(), 3000);
+    }
+
+    _disableSaveButton(){
+        this._getSaveButton().setAttribute("disabled", true);
+    }
+
+    _enableSaveButton(){
+        this._getSaveButton().innerHTML = `Save`;
+        this._getSaveButton().removeAttribute("disabled");
+    }
+
+    _getSaveButton(){
+        return this.shadowRoot.getElementById('saveBtn')
     }
     
 }

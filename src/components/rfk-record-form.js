@@ -2,6 +2,7 @@ import { html, css, LitElement } from "lit-element";
 import "@vaadin/vaadin-text-field/vaadin-password-field.js";
 import "@vaadin/vaadin-text-field/vaadin-text-area.js";
 import "@vaadin/vaadin-upload/vaadin-upload.js";
+import "@vaadin/vaadin-date-picker/vaadin-date-picker.js"
 
 export class RfkRecordForm extends LitElement {
 
@@ -49,11 +50,25 @@ export class RfkRecordForm extends LitElement {
                 return html`
                     <label for=${id}>${id}</label>
                     <input type="file" id=${id} @change=${e => this.fileSelected(e,id)}></input>`;
+            case 'selectRelated' :
+                return html`
+                <vaadin-button id=${id} @click="${e => this._relationshipSelected(id)}">${this.recordData[id] ? 'Show ' + id : 'New ' + id}</vaadin-button>`;
+            case 'datePicker' :
+                    return html`
+                    <vaadin-date-picker label=${id} id=${id} .value=${this.recordData ? data : ''} @change=${e => this.inputChanged(e.target.value,id)}></vaadin-date-picker>`;
             default: 
                 return html`
                     <vaadin-text-field label=${id} id="${id}" .value=${this.recordData ? data : ''} @change=${e => this.inputChanged(e.target.value,id)}>
                     </vaadin-text-field>`
         }
+    }
+
+    _relationshipSelected(field){
+        let selectionEvent = new CustomEvent('relationship-selected', {
+            detail: {field: field},
+            bubbles: true
+        });
+        this.dispatchEvent(selectionEvent);
     }
 
     inputChanged(val,field){

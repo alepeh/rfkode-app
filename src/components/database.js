@@ -46,8 +46,8 @@ class Database {
         return this.localDb.put(document);
     }
 
-    getDocument(id){
-        return this.localDb.get(id);
+    getDocument(id, options){
+        return this.localDb.get(id, {attachments : true});
     }
 
     allDocsOfSchema(schemaId){
@@ -58,6 +58,10 @@ class Database {
             startkey: 'record:'+schemaName,
             endkey: 'record:'+schemaName+'\ufff0'
         })
+    }
+
+    getAttachment(docId, attachmentName){
+        return this.localDb.getAttachment(docId, attachmentName);
     }
 
     allDocs(){

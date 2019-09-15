@@ -211,6 +211,7 @@ class RfkApp extends connect(store)(LitElement) {
                 padding: 24px;
                 background: var(--app-drawer-background-color);
                 position: relative;
+                z-index: 100;
               }
       
               .drawer-list > a {
@@ -219,10 +220,12 @@ class RfkApp extends connect(store)(LitElement) {
                 color: var(--app-drawer-text-color);
                 line-height: 40px;
                 padding: 0 24px;
+                z-index: 100;
               }
       
               .drawer-list > a[selected] {
                 color: var(--app-drawer-selected-color);
+                z-index: 100;
               }
           `
         ];

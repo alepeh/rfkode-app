@@ -14,28 +14,29 @@
 
     <test-fixture id="BasicTestFixture">
       <template>
-        <rfk-login-form></rfk-login>
+        <rfk-attachments></rfk-attachments>
       </template>
     </test-fixture>
 
     <script type="module">
       import '@polymer/test-fixture';
-      import '../../src/components/rfk-login-form.js'
+      import '../../src/components/rfk-attachments.js'
 
       suite('rfk-app', () => {
         let el;
         setup(function() {
           el = fixture('BasicTestFixture');
+          //const attachments = "{\"mergeTemplate\":{\"digest\":\"md5-YY0hBMPDfo8v9dQXdM8etg==\",\"content_type\":\"application/msword\",\"revpos\":7,\"data\":{}}},\"_id\":\"schema:anlagendatenblatt:v1\",\"_rev\":\"7-d435c670dcf5f74f4944a60d608bb738\"}}";
+          const attachments = {mergeTemplate : {}};
+          el.setAttribute('attachments',JSON.stringify(attachments));
           // Make tests wait until element is rendered.
           return el.updateComplete;
         });
 
-        test('login form input fields rendered', () => {
+        test('attachment is rendered as a list item', () => {
           const elementShadowRoot = el.shadowRoot;
-          const usernameField = elementShadowRoot.querySelector('#username');
-          const passwordField = elementShadowRoot.querySelector('#password');
-          assert.exists(usernameField);
-          assert.exists(passwordField);
+          const attachmentItem = elementShadowRoot.querySelector('li');
+          assert.equal(attachmentItem.innerText,"mergeTemplate");
         });
       });
     </script>

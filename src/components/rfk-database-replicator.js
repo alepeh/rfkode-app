@@ -6,6 +6,7 @@ import { navigate } from '../actions/app.js';
 
 // These are the actions needed by this element.
 import { login, logout } from '../actions/auth.js';
+import "@vaadin/vaadin-custom-field/vaadin-custom-field.js"
 
 // We are lazy loading its reducer.
 import auth from '../reducers/auth.js';
@@ -24,11 +25,13 @@ export class RfkDatabaseReplicator extends LitElement {
     render(){
         return html`
         <div style='{margin: 0 auto;}'>
-        <vaadin-text-field label="Username" id="username" .value="${this.username}">
-        </vaadin-text-field>
-        <vaadin-password-field label="Password" id="password" .value="${this.password}">
-        </vaadin-password-field>
-        <vaadin-button @click=${this._login}>Login</vaadin-button>
+          <vaadin-custom-field label="Replication">
+            <vaadin-text-field label="Username" id="username" .value="${this.username}">
+            </vaadin-text-field>
+            <vaadin-password-field label="Password" id="password" .value="${this.password}">
+            </vaadin-password-field>
+            <vaadin-button @click=${this._login}>Login</vaadin-button>
+        </vaadin-custom-field>
         </div>
         `;
     }

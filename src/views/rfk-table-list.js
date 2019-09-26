@@ -4,8 +4,9 @@ import { db } from '../components/database.js';
 
 // These are the shared styles needed by this element.
 import { SharedStyles } from '../components/shared-styles.js';
+import "@vaadin/vaadin-item/vaadin-item.js"
 
-class RfkTableList extends PageViewElement {
+export class RfkTableList extends PageViewElement {
   static get styles() {
     return [
       SharedStyles
@@ -38,7 +39,7 @@ class RfkTableList extends PageViewElement {
         <p>
         ${this.schemas.map(
           (schema) => html`
-            <div><a href="/table?name=${schema.doc._id}">${schema.doc.name}</a></div>
+            <vaadin-item><a href="/table?name=${schema.doc._id}">${schema.doc.name}</a></vaadin-item>
           `
         )}
         </p>

@@ -1,0 +1,24 @@
+{
+	"type": "object",
+	"properties": {
+		"aufnahmeDatum": {
+			"type": "string",
+			"format": "date"
+		},
+		"betreiberName": {
+			"type": "string"
+		},
+		"betreiberTelefonnummer": {
+			"type": "string"
+		},
+		"feuerstaette": {
+			"type": "string",
+			"format": "relationship"
+		}
+	},
+	"relationships": {
+		"feuerstaette": {
+			"$ref": "schema:feuerstätte:v1"
+		}
+	}
+}

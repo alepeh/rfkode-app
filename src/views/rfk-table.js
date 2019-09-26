@@ -1,14 +1,25 @@
 import { db } from '../components/database.js';
-import { html } from 'lit-element'
+import { html, css } from 'lit-element'
 import { PageViewElement } from '../components/page-view-element';
 import { SharedStyles } from '../components/shared-styles.js';
+import "@vaadin/vaadin-grid/all-imports.js"
+import "@vaadin/vaadin-icons/vaadin-icons.js"
 
 class RfkTable extends PageViewElement {
-    static get styles() {
+
+      static get styles() {
         return [
-          SharedStyles
-        ];
-      }
+            SharedStyles,
+            css`
+            vaadin-grid {
+                width: 100%;
+            },
+            :host(.auto-width) {
+                display: inline-block;
+              }
+            `
+        ]
+    }
     
     static get properties(){
         return {
@@ -36,6 +47,24 @@ class RfkTable extends PageViewElement {
         }
     }
 
+    updated(changedProperties){
+        const columns = this.shadowRoot.querySelectorAll('vaadin-grid-column');
+        columns[0].renderer = function(root, column, rowData) {
+              root.innerHTML = `<div style="white-space: normal"><a href="/record-form?tableName=${rowData.item.schema}&recordId=${rowData.item._id}&action=edit">
+                <iron-icon icon="vaadin:edit"></iron-icon>
+              </a></div>`;
+          };
+
+        const grid = this.shadowRoot.getElementById('grid');
+        const gridItems = this.records.rows.map(row => {
+            let doc = row.doc;
+            doc['schema'] = this.schema._id;
+            return doc;
+        })
+        grid.items = gridItems;
+        console.log("grid-defined");
+    }
+
     async getResource(name){
         await db.getDocument(name).then((schema) => {
             this.schema = schema;
@@ -43,38 +72,24 @@ class RfkTable extends PageViewElement {
         })
         await db.allDocsOfSchema(name).then((records) => {
             this.records = records;
-            console.dir(records);
         });
     }
 
     render() {
         return html`
             <section>
-                <h2>Table ${this.tableName} <a href="/record-form?tableName=schema:schema:v1&recordId=${this.schema._id}&action=edit">Edit</a>
-                <a href="/record-form?tableName=${this.schema._id}">New</a>
+                <h2>Table ${this.tableName} <a href="/record-form?tableName=schema:schema:v1&recordId=${this.schema._id}&action=edit"><iron-icon icon="vaadin:edit"></iron-icon></a>
+                <a href="/record-form?tableName=${this.schema._id}"><iron-icon icon="vaadin:plus"></iron-icon></a>
                 </h2>
-                <table>
-                <tr>
+
+                <vaadin-grid id="grid" theme="compact column-borders">
+                <vaadin-grid-column auto-width path="edit" header="edit"></vaadin-grid-column>
                 ${Object.keys(this.schema.jsonSchema.properties).map(
-                  (field) => html`
-                  <th id=${field}>${field}</th>
-                  `
-                )}
-                </tr>
-                ${this.records.rows.map(
-                    (row) => html`
-                    <tr>
-                    <a href="/record-form?tableName=${this.schema._id + '&recordId=' + row.doc._id + '&action=edit'}">
-                    ${Object.keys(this.schema.jsonSchema.properties).map(
-                        (field) => html`
-                    <td>${row.doc[field]}</td>`
-                )}  </a>
-                    </tr>
+                    (field) => html`
+                    <vaadin-grid-sort-column auto-width path="${field}" header="${field}"></vaadin-grid-sort-column>
                     `
-                  )}
-                <td>
-                </td>
-                  </table>
+                  )}                    
+                </vaadin-grid>
             </section>
             `;
     }

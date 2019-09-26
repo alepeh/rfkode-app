@@ -14,8 +14,25 @@ class Database {
         console.log("logging in: " + username +  " " + password);
         return this._login(username, password).then(() => {
             console.log("Login success");
-            this.localDb.sync(this.remoteDb, {live: true, retry: true, /* other sync options */});
+            this.localDb.sync(this.remoteDb, {live: true, retry: true})
+                .on('change', (info) => {
+                this._syncLog('change');
+              }).on('paused', (err) => {
+                this._syncLog('paused', err);
+              }).on('active', () => {
+                this._syncLog('active');
+              }).on('denied', (err) => {
+                this._syncLog('denied', err);
+              }).on('complete', (info) => {
+                this._syncLog('complete');
+              }).on('error', (err) => {
+                this._syncLog('error', err);
+              });
         });
+    }
+
+    _syncLog(action, detail){
+        console.log('Replication ' + action + ' detail: ' + JSON.stringify(detail));
     }
 
     _login(username, password){

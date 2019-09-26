@@ -9,7 +9,6 @@ import { installOfflineWatcher } from 'pwa-helpers/network.js';
 import { installRouter } from 'pwa-helpers/router.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
 import { menuIcon} from './components/rfk-icons.js';
-import { RfkTableList } from './views/rfk-table-list.js'
 import './components/snack-bar.js';
 import { store } from './store.js';
 import {

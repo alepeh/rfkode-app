@@ -3,8 +3,13 @@ import "@vaadin/vaadin-text-field/vaadin-password-field.js";
 import "@vaadin/vaadin-text-field/vaadin-text-area.js";
 import "@vaadin/vaadin-upload/vaadin-upload.js";
 import "@vaadin/vaadin-date-picker/vaadin-date-picker.js"
+import "@vaadin/vaadin-select/vaadin-select.js"
 
 export class RfkRecordForm extends LitElement {
+
+    constructor(){
+        super();
+    }
 
     static get properties() {
         return {
@@ -35,10 +40,11 @@ export class RfkRecordForm extends LitElement {
     }
 
     produceWidget(id, uiSchema, data){
+        console.log(id);
+        console.dir(uiSchema);
         if (!uiSchema){
-            return html`
-            <vaadin-text-field label=${id} id="${id}" .value=${this.recordData ? data : ''} @change=${e => this.inputChanged(e.target.value,id)}>
-            </vaadin-text-field>`
+            console.log("no special ui schema")
+            return this.widgetFor({jsonSchema: this.schema.jsonSchema.properties[id], uiOptions: this.schema.uiSchema ? this.schema.uiSchema[id] : '', id : id, data : this.recordData[id]});
         }
         switch(uiSchema.widget){
             case 'textarea' :
@@ -51,11 +57,8 @@ export class RfkRecordForm extends LitElement {
                     <label for=${id}>${id}</label>
                     <input type="file" id=${id} @change=${e => this.fileSelected(e,id)}></input>`;
             case 'selectRelated' :
-                return html`
-                <vaadin-button id=${id} @click="${e => this._relationshipSelected(id)}">${this.recordData[id] ? 'Show ' + id : 'New ' + id}</vaadin-button>`;
-            case 'datePicker' :
-                    return html`
-                    <vaadin-date-picker label=${id} id=${id} .value=${this.recordData ? data : ''} @change=${e => this.inputChanged(e.target.value,id)}></vaadin-date-picker>`;
+                return html`<p>
+                <vaadin-button id=${id} @click="${e => this._relationshipSelected(id)}">${this.recordData[id] ? 'Show ' + id : 'New ' + id}</vaadin-button></p>`;
             default: 
                 return html`
                     <vaadin-text-field label=${id} id="${id}" .value=${this.recordData ? data : ''} @change=${e => this.inputChanged(e.target.value,id)}>
@@ -63,12 +66,52 @@ export class RfkRecordForm extends LitElement {
         }
     }
 
-    _relationshipSelected(field){
-        let selectionEvent = new CustomEvent('relationship-selected', {
-            detail: {field: field},
-            bubbles: true
-        });
-        this.dispatchEvent(selectionEvent);
+    widgetFor(widgetDescriptor) {
+        console.log("widgetDescriptor");
+        console.dir(widgetDescriptor);
+        switch(widgetDescriptor.jsonSchema.type){
+            case 'string': return this.produceTextWidget(widgetDescriptor);
+                    
+        }
+    }
+
+    produceTextWidget(widgetDescriptor) {
+        console.log(widgetDescriptor.jsonSchema['format']);
+        //Select Box
+        if(widgetDescriptor.jsonSchema.enum){
+            return this.produceSelectOneWidget(widgetDescriptor);
+        }
+        //Date
+        if(widgetDescriptor.jsonSchema['format'] === 'date'){
+            return this.produceDateWidget(widgetDescriptor);
+        }
+        return html`
+        <vaadin-text-field label=${widgetDescriptor.id} id=${widgetDescriptor.id} .value=${widgetDescriptor.data ? widgetDescriptor.data : ''} @change=${e => this.inputChanged(e.target.value,widgetDescriptor.id)}>
+        </vaadin-text-field>`;
+    }
+    
+    produceSelectOneWidget(widgetDescriptor) {
+        return html`
+        <vaadin-select label=${widgetDescriptor.id} .value=${widgetDescriptor.data ? widgetDescriptor.data : ''} @change=${e => this.inputChanged(e.target.value,widgetDescriptor.id)}>
+            <template>
+                <vaadin-list-box>
+                    ${widgetDescriptor.jsonSchema.enum.map(option => {
+                        return html`
+                            <vaadin-item>${option}</vaadin-item>
+                        `;
+                    })}
+                </vaadin-list-box>
+            </template>
+        </vaadin-select>   
+        `;
+    }
+
+    produceDateWidget(widgetDescriptor){
+        return html`
+        <vaadin-date-picker label=${widgetDescriptor.id} id=${widgetDescriptor.id} 
+            .value=${widgetDescriptor.data ? widgetDescriptor.data : ''} 
+            @change=${e => this.inputChanged(e.target.value,widgetDescriptor.id)}>
+        </vaadin-date-picker>`;
     }
 
     inputChanged(val,field){
@@ -77,6 +120,16 @@ export class RfkRecordForm extends LitElement {
             bubbles: true
         });
         this.dispatchEvent(updateEvent);
+    }
+
+    _relationshipSelected(field){
+        console.log("_rel selected");
+        console.dir(field);
+        let selectionEvent = new CustomEvent('relationship-selected', {
+            detail: {field: field},
+            bubbles: true
+        });
+        this.dispatchEvent(selectionEvent);
     }
 
     fileSelected(e,field){

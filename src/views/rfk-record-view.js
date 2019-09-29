@@ -122,6 +122,7 @@ class RfkRecordView extends PageViewElement {
     }
 
     _relationshipSelected(selectionEvent) {
+        console.dir(selectionEvent);
         const relationship = selectionEvent.field;
         let relatedRecordId = this.recordData[relationship];
         const relatedSchema = this.schema.jsonSchema.relationships[relationship].$ref;

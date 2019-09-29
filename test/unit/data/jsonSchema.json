@@ -7,14 +7,26 @@
 		},
 		"betreiberName": {
 			"type": "string"
-		},
+        },
+        "betreiberStrasse" : {
+            "type": "string"
+        },
+        "betreiberHausnummer" : {
+            "type": "string"
+        },
+        "betreiberPlz" : {
+            "type": "string"
+        },
+        "betreiberOrt" : {
+            "type": "string"
+        },
 		"betreiberTelefonnummer": {
 			"type": "string"
 		},
 		"feuerstaette": {
 			"type": "string",
 			"format": "relationship"
-		}
+        }
 	},
 	"relationships": {
 		"feuerstaette": {

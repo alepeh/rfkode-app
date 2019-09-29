@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>rfk-app test</title>
+    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+    <script src="../../node_modules/mocha/mocha.js"></script>
+    <script src="../../node_modules/chai/chai.js"></script>
+    <script src="../../node_modules/wct-mocha/wct-mocha.js"></script>
+  </head>
+  <body>
+
+    <test-fixture id="BasicTestFixture">
+      <template>
+        <rfk-record-form></rfk-record-form>
+      </template>
+    </test-fixture>
+
+    <script type="module">
+      import '@polymer/test-fixture';
+      import '../../src/components/rfk-record-form.js'
+
+      suite('rfk-record-form', () => {
+        let el;
+        setup(function() {
+          el = fixture('BasicTestFixture');
+          const schema = {
+            jsonSchema : {
+	            type: "object",
+	            properties: {
+		              stringProperty: {
+			            type: "string"
+                }
+              }
+            }
+          }
+          const data = { stringProperty : "string"}
+          el.setAttribute('schema',JSON.stringify(schema));
+          el.setAttribute('recordData',JSON.stringify(data));
+          // Make tests wait until element is rendered.
+          return el.updateComplete;
+        });
+
+        test('string type is rendered as text field', () => {
+          const elementShadowRoot = el.shadowRoot;
+          const attachmentItem = elementShadowRoot.querySelector('vaadin-text-field');
+          assert.equal(attachmentItem.value,"string");
+        });
+      });
+    </script>
+
+  </body>
+</html>

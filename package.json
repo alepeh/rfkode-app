@@ -6,7 +6,7 @@
     "build": "polymer build --auto-base-path && gulp prpl-server",
     "serve": "prpl-server --root server/build",
     "start": "polymer serve | browser-sync start --proxy localhost:8081 --open --files \"**/*.js\" --files \"**/*.html\" --files \"**/*.css\"",
-    "test:unit": "polymer test --module-resolution=node --npm"
+    "test:unit": "polymer test -l chrome --module-resolution=node --npm"
   },
   "repository": {
     "type": "git",

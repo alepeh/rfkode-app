@@ -34,7 +34,7 @@ export class RfkRecordForm extends LitElement {
     render() {
         return html`
         ${Object.keys(this.schema.jsonSchema.properties).map(
-            (row) => this.produceWidget(row, this.schema.uiSchema ? this.schema.uiSchema[row] : null, this.recordData[row])
+            (row) => this.produceWidget(row, this.schema.uiSchema ? this.schema.uiSchema[row] : null, this.recordData ? this.recordData[row] : '')
         )}
         `;
     }
@@ -44,7 +44,7 @@ export class RfkRecordForm extends LitElement {
         console.dir(uiSchema);
         if (!uiSchema){
             console.log("no special ui schema")
-            return this.widgetFor({jsonSchema: this.schema.jsonSchema.properties[id], uiOptions: this.schema.uiSchema ? this.schema.uiSchema[id] : '', id : id, data : this.recordData[id]});
+            return this.widgetFor({jsonSchema: this.schema.jsonSchema.properties[id], uiOptions: this.schema.uiSchema ? this.schema.uiSchema[id] : '', id : id, data : this.recordData ? this.recordData[id] : ''});
         }
         switch(uiSchema.widget){
             case 'textarea' :

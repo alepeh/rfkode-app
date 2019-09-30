@@ -32,11 +32,14 @@
 	            properties: {
 		              stringProperty: {
 			            type: "string"
+                },
+                  booleanProperty: {
+                    type: "boolean"
                 }
               }
             }
           }
-          const data = { stringProperty : "string"}
+          const data = { stringProperty : "string", booleanProperty : true}
           el.setAttribute('schema',JSON.stringify(schema));
           el.setAttribute('recordData',JSON.stringify(data));
           // Make tests wait until element is rendered.
@@ -48,6 +51,13 @@
           const attachmentItem = elementShadowRoot.querySelector('vaadin-text-field');
           assert.equal(attachmentItem.value,"string");
         });
+
+        test('boolean type is rendered as checkbox field', () => {
+          const elementShadowRoot = el.shadowRoot;
+          const attachmentItem = elementShadowRoot.querySelector('vaadin-checkbox');
+          assert.equal(attachmentItem.hasAttribute('checked'),true);
+        });
+
       });
     </script>
 

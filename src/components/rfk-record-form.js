@@ -4,6 +4,7 @@ import "@vaadin/vaadin-text-field/vaadin-text-area.js";
 import "@vaadin/vaadin-upload/vaadin-upload.js";
 import "@vaadin/vaadin-date-picker/vaadin-date-picker.js"
 import "@vaadin/vaadin-select/vaadin-select.js"
+import "@vaadin/vaadin-checkbox/vaadin-checkbox.js"
 
 export class RfkRecordForm extends LitElement {
 
@@ -71,8 +72,14 @@ export class RfkRecordForm extends LitElement {
         console.dir(widgetDescriptor);
         switch(widgetDescriptor.jsonSchema.type){
             case 'string': return this.produceTextWidget(widgetDescriptor);
-                    
+            case 'boolean': return this.produceCheckboxWidget(widgetDescriptor);
         }
+    }
+
+    produceCheckboxWidget(widgetDescriptor){
+        return html`
+        <vaadin-checkbox ?checked=${widgetDescriptor.data ? widgetDescriptor.data : false}>${widgetDescriptor.id}</vaadin-checkbox>
+        `;
     }
 
     produceTextWidget(widgetDescriptor) {

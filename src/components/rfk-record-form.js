@@ -41,8 +41,6 @@ export class RfkRecordForm extends LitElement {
     }
 
     produceWidget(id, uiSchema, data){
-        console.log(id);
-        console.dir(uiSchema);
         if (!uiSchema){
             console.log("no special ui schema")
             return this.widgetFor({jsonSchema: this.schema.jsonSchema.properties[id], uiOptions: this.schema.uiSchema ? this.schema.uiSchema[id] : '', id : id, data : this.recordData ? this.recordData[id] : ''});
@@ -68,8 +66,6 @@ export class RfkRecordForm extends LitElement {
     }
 
     widgetFor(widgetDescriptor) {
-        console.log("widgetDescriptor");
-        console.dir(widgetDescriptor);
         switch(widgetDescriptor.jsonSchema.type){
             case 'string': return this.produceTextWidget(widgetDescriptor);
             case 'boolean': return this.produceCheckboxWidget(widgetDescriptor);
@@ -78,7 +74,7 @@ export class RfkRecordForm extends LitElement {
 
     produceCheckboxWidget(widgetDescriptor){
         return html`
-        <vaadin-checkbox ?checked=${widgetDescriptor.data ? widgetDescriptor.data : false}>${widgetDescriptor.id}</vaadin-checkbox>
+        <vaadin-checkbox ?checked=${widgetDescriptor.data ? widgetDescriptor.data : false} @change=${e => this.inputChanged((e.target.hasAttribute('checked') ? true : false),widgetDescriptor.id)}>${widgetDescriptor.id}</vaadin-checkbox>
         `;
     }
 
@@ -130,8 +126,6 @@ export class RfkRecordForm extends LitElement {
     }
 
     _relationshipSelected(field){
-        console.log("_rel selected");
-        console.dir(field);
         let selectionEvent = new CustomEvent('relationship-selected', {
             detail: {field: field},
             bubbles: true

@@ -3,6 +3,8 @@ export const UPDATE_OFFLINE = 'UPDATE_OFFLINE';
 export const UPDATE_DRAWER_STATE = 'UPDATE_DRAWER_STATE';
 export const OPEN_SNACKBAR = 'OPEN_SNACKBAR';
 export const CLOSE_SNACKBAR = 'CLOSE_SNACKBAR';
+export const LOGIN = 'LOGIN';
+export const UPDATE_SYNC_STATE = 'UPDATE_SYNC_STATE';
 
 export const navigate = (path) => (dispatch) => {
   // Extract the page name from path.
@@ -88,5 +90,22 @@ export const updateDrawerState = (opened) => {
   return {
     type: UPDATE_DRAWER_STATE,
     opened
+  };
+};
+
+export const updateLoginState = (authContext) => {
+  return {
+    type: LOGIN,
+    loggedIn : authContext.loggedIn,
+    username : authContext.username,
+    token : authContext.token
+  };
+};
+
+export const updateSyncState = (syncState) => {
+  return {
+    type: UPDATE_SYNC_STATE,
+    syncState : syncState.state,
+    syncError : syncState.error
   };
 };

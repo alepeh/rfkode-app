@@ -1,23 +1,28 @@
 import "pouchdb/dist/pouchdb.js";
 import * as response from "./ResponseUtils";
+import { store } from '../store.js';
+import { updateSyncState } from '../actions/app.js';
 
 class Database {
 
     constructor(){
         this.DBNAME = 'rfkode';
-        this.COUCHDB_HOST = 'https://couch.alexanderpehm.at/';
         this.localDb = new PouchDB(this.DBNAME);
-        this.remoteDb = new PouchDB(this.COUCHDB_HOST + this.DBNAME);
     }
 
-    sync(username, password) {
-        console.log("logging in: " + username +  " " + password);
-        return this._login(username, password).then(() => {
-            console.log("Login success");
-            this.localDb.sync(this.remoteDb, {live: true, retry: true})
+    sync(token) {
+        const remoteDbUrl = this._extractRemoteDbUrlFromToken(token);
+        const remoteDb = new PouchDB(remoteDbUrl, {
+            fetch: function (url, opts) {
+              opts.headers.set('Authorization', 'Bearer ' + token);
+              return PouchDB.fetch(url, opts);
+            }
+          });
+            this.localDb.sync(remoteDb, {live: true, retry: true})
                 .on('change', (info) => {
                 this._syncLog('change');
               }).on('paused', (err) => {
+                store.dispatch(updateSyncState({state: 'COMPLETE'}));
                 this._syncLog('paused', err);
               }).on('active', () => {
                 this._syncLog('active');
@@ -28,27 +33,16 @@ class Database {
               }).on('error', (err) => {
                 this._syncLog('error', err);
               });
-        });
+    }
+
+    _extractRemoteDbUrlFromToken(token){
+        const tokenPayload = token.split('.')[1];
+        const decodedPayload = JSON.parse(window.atob(tokenPayload));
+        return decodedPayload['https://rfkode.alexanderpehm.at/remote_db_url'];
     }
 
     _syncLog(action, detail){
         console.log('Replication ' + action + ' detail: ' + JSON.stringify(detail));
-    }
-
-    _login(username, password){
-        // this creates an auth session that's stored as a cookie
-        return fetch(this.COUCHDB_HOST + '_session', {
-            method: "POST",
-            mode: "cors",
-            credentials: "include",
-            headers: {
-                "Content-type": "application/json; charset=UTF-8"
-            },
-            body: JSON.stringify({
-                "name": username,
-                "password": password
-            })
-        }).then(response.status)
     }
 
     allSchemas(){

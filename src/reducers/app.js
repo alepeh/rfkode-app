@@ -3,7 +3,9 @@ import {
     UPDATE_OFFLINE,
     OPEN_SNACKBAR,
     CLOSE_SNACKBAR,
-    UPDATE_DRAWER_STATE
+    UPDATE_DRAWER_STATE,
+    LOGIN,
+    UPDATE_SYNC_STATE
   } from '../actions/app.js';
   
   const INITIAL_STATE = {
@@ -11,6 +13,8 @@ import {
     offline: false,
     drawerOpened: false,
     snackbarOpened: false,
+    loggedIn: false,
+    syncState: 'PENDING'
   };
   
   const app = (state = INITIAL_STATE, action) => {
@@ -39,6 +43,20 @@ import {
         return {
           ...state,
           snackbarOpened: false
+        };
+      case LOGIN:
+        return {
+          ...state,
+          loggedIn: action.loggedIn,
+          username: action.username,
+          token: action.token
+        };
+      case UPDATE_SYNC_STATE:
+        console.dir(action);
+        return {
+          ...state,
+          syncState: action.syncState,
+          syncError: action.syncError
         };
       default:
         return state;

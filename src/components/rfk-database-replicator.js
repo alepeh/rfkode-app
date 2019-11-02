@@ -1,49 +1,47 @@
 import { html, LitElement } from 'lit-element';
 import { db } from "../components/database.js";
-// This element is connected to the Redux store.
-import { store } from '../store.js';
-import { navigate } from '../actions/app.js';
-
-// These are the actions needed by this element.
-import { login, logout } from '../actions/auth.js';
 import "@vaadin/vaadin-custom-field/vaadin-custom-field.js"
+import "@vaadin/vaadin-button/vaadin-button.js";
+import { connect } from 'pwa-helpers/connect-mixin.js';
+import { store } from '../store.js';
+import "@vaadin/vaadin-icons/vaadin-icons.js"
 
-// We are lazy loading its reducer.
-import auth from '../reducers/auth.js';
-store.addReducers({
-  auth
-});
-
-export class RfkDatabaseReplicator extends LitElement {
+export class RfkDatabaseReplicator extends connect(store)(LitElement) {
 
     constructor(){
         super();
-        this.username = '';
-        this.password = '';
-      }
+        this.token;
+    }
+
+    static get properties() {
+      return {
+        _inSync: { type: Boolean }
+      };
+    }
+
+    stateChanged(state){
+      this.token = state.app.token;
+      this._inSync = (state.app.syncState === 'COMPLETE' ? true : false);
+      console.log("InSync: " + this._inSync);
+    }
 
     render(){
         return html`
         <div style='{margin: 0 auto;}'>
           <vaadin-custom-field label="Replication">
-            <vaadin-text-field label="Username" id="username" .value="${this.username}">
-            </vaadin-text-field>
-            <vaadin-password-field label="Password" id="password" .value="${this.password}">
-            </vaadin-password-field>
-            <vaadin-button @click=${this._login}>Login</vaadin-button>
+          <vaadin-button @click=${this._sync}>Sync</vaadin-button>
+            ${this._inSync
+              ? html`<iron-icon icon="vaadin:vaadin:check"></iron-icon>`
+              : html`Pending`
+          }
         </vaadin-custom-field>
         </div>
         `;
     }
 
-    _login(){
-        this.username = this.shadowRoot.getElementById("username").value
-        this.password = this.shadowRoot.getElementById("password").value
-        db.sync(this.username, this.password).then(() => {
-          console.log("User logged in");
-          store.dispatch(login())
-          store.dispatch(navigate(decodeURIComponent('#table-list')));
-        });
+    _sync(){
+        console.log("Token is " + this.token);
+        db.sync(this.token);
       }
 }
 window.customElements.define('rfk-database-replicator', RfkDatabaseReplicator);

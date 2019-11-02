@@ -1,4 +1,5 @@
 {
     "domain": "dev-dzzf-al0.eu.auth0.com",
-    "clientId": "l5Ttrvjjt21czQJROZK1EaBdoQ8BRasi"
+    "clientId": "l5Ttrvjjt21czQJROZK1EaBdoQ8BRasi",
+    "audience" : "https://lake.alexanderpehm.at"
 }

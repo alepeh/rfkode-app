@@ -10,6 +10,7 @@ import { installRouter } from 'pwa-helpers/router.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
 import { menuIcon} from './components/rfk-icons.js';
 import './components/snack-bar.js';
+import { authenticator } from './components/auth.js'
 import { store } from './store.js';
 import {
     navigate,
@@ -26,7 +27,8 @@ class RfkApp extends connect(store)(LitElement) {
           _page: { type: String },
           _drawerOpened: { type: Boolean },
           _snackbarOpened: { type: Boolean },
-          _offline: { type: Boolean }
+          _offline: { type: Boolean },
+          _loggedIn: { type: Boolean}
         };
       }
 
@@ -39,20 +41,12 @@ class RfkApp extends connect(store)(LitElement) {
           <!-- Header -->
           <app-header condenses reveals effects="waterfall">
             <app-toolbar class="toolbar-top">
-              <button class="menu-btn" title="Menu" @click="${this._menuButtonClicked}">${menuIcon}</button>
+              <a href="/table-list">Home</a>
               <div main-title>${this.appTitle}</div>
+              <div><a href="/login">Logged In: ${this._loggedIn ? "Yes" : "No"}</a></div>
             </app-toolbar>
           </app-header>
-          <!-- Drawer content -->
-          <app-drawer
-              .opened="${this._drawerOpened}"
-              @opened-changed="${this._drawerOpenedChanged}">
-              <nav class="drawer-list">
-              <a href="/login">Login</a>
-              <a href="/settings">Settings</a>
-              <a href="/table-list">Table List</a>
-            </nav>
-        </app-drawer>
+          
     
           <!-- Main content -->
           <main role="main" class="main-content">
@@ -75,6 +69,7 @@ class RfkApp extends connect(store)(LitElement) {
         installOfflineWatcher((offline) => store.dispatch(updateOffline(offline)));
         installMediaQueryWatcher(`(min-width: 460px)`,
             () => store.dispatch(updateDrawerState(false)));
+        authenticator.getTokenSilently();
       }
     
       updated(changedProps) {
@@ -88,19 +83,12 @@ class RfkApp extends connect(store)(LitElement) {
         }
       }
     
-      _menuButtonClicked() {
-        store.dispatch(updateDrawerState(true));
-      }
-    
-      _drawerOpenedChanged(e) {
-        store.dispatch(updateDrawerState(e.target.opened));
-      }
-    
       stateChanged(state) {
+        console.dir(state);
         this._page = state.app.page;
         this._offline = state.app.offline;
         this._snackbarOpened = state.app.snackbarOpened;
-        this._drawerOpened = state.app.drawerOpened;
+        this._loggedIn = state.app.loggedIn;
       }
 
     static get styles() {
@@ -195,6 +183,8 @@ class RfkApp extends connect(store)(LitElement) {
     
             .page[active] {
               display: block;
+              position: relative;
+              z-index: 1;
             }
     
             /* Wide layout: when the viewport width is bigger than 460px, layout
@@ -205,33 +195,8 @@ class RfkApp extends connect(store)(LitElement) {
                 padding-top: 107px;
               }
             }
-
-            .drawer-list {
-                box-sizing: border-box;
-                width: 100%;
-                height: 100%;
-                padding: 24px;
-                background: var(--app-drawer-background-color);
-                position: relative;
-                z-index: 100;
-              }
-      
-              .drawer-list > a {
-                display: block;
-                text-decoration: none;
-                color: var(--app-drawer-text-color);
-                line-height: 40px;
-                padding: 0 24px;
-                z-index: 100;
-              }
-      
-              .drawer-list > a[selected] {
-                color: var(--app-drawer-selected-color);
-                z-index: 100;
-              }
           `
         ];
       }
-
 }
 window.customElements.define('rfk-app', RfkApp);

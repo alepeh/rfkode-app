@@ -2,9 +2,18 @@ import createAuth0Client from '@auth0/auth0-spa-js';
 import { PageViewElement } from '../components/page-view-element';
 import { SharedStyles } from '../components/shared-styles.js';
 import { html } from "lit-element";
-
+import "jwt-decode/build/jwt-decode.js";
+import { authenticator } from "../components/auth.js"
+import { RfkDatabaseReplicator } from '../components/rfk-database-replicator';
+import "@vaadin/vaadin-button/vaadin-button.js";
 
 class RfkLoginView extends PageViewElement {
+
+    constructor(){
+        super();
+        this.accessToken = '';
+        this.user = '';
+    }
 
     static get styles() {
         return [
@@ -18,45 +27,32 @@ class RfkLoginView extends PageViewElement {
         }
     }
 
-    async _configureClient() {
-        const response = await fetch("/config.json");
-        const config = await response.json();
-
-        this.auth0 = await createAuth0Client({
-            domain: config.domain,
-            client_id: config.clientId
-        });
-    };
-
     async attributeChangedCallback(name, oldValue, newValue) {
         super.attributeChangedCallback(name, oldValue, newValue);
         if (name === 'active' && newValue != null) {
             console.log("isActive");
-            await this._configureClient();
-            console.log("clientConfigured");
             const query = window.location.search;
             if (query.includes("code=") && query.includes("state=")) {
-                // Process the login state
-                await this.auth0.handleRedirectCallback();
+                await authenticator.handleRedirectCallback();
                 window.history.replaceState({}, document.title, "/login");
             }
-            this.isAuthenticated = await this.auth0.isAuthenticated();
+            this.accessToken = await authenticator.getTokenSilently();
+            this.isAuthenticated = await authenticator.isAuthenticated();
             console.log(this.isAuthenticated);
+            console.log(jwt_decode(this.accessToken));
         }
     }
 
     render() {
         return html`
         <h2>Login</h2>
-        <button id="btn-login" ?disabled=${this.isAuthenticated} @click=${() => this.login()}>Log in</button>
-        <button id="btn-logout" ?disabled=${!this.isAuthenticated} @click="${() => this.logout()}">Log out</button>
+        <vaadin-button id="btn-login" ?disabled=${this.isAuthenticated} @click=${() => this.login()}>Log in</vaadin-button>
+        <rfk-database-replicator></rfk-database-replicator>
         `;
     }
 
-    async login() {
-        await this.auth0.loginWithRedirect({
-            redirect_uri: window.location.href
-        });
+    login() {
+        authenticator.loginWithRedirect(window.location.href);
     };
 }
 window.customElements.define('rfk-login-view', RfkLoginView);

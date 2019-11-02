@@ -10,13 +10,10 @@ class Auth {
     }
 
     async _configureClient() {
-        const response = await fetch("/config.json");
-        const config = await response.json();
-
         this.auth0 = await createAuth0Client({
-            domain: config.domain,
-            client_id: config.clientId,
-            audience : config.audience
+            domain: "dev-dzzf-al0.eu.auth0.com",
+            clientId: "l5Ttrvjjt21czQJROZK1EaBdoQ8BRasi",
+            audience : "https://lake.alexanderpehm.at"
         });
     };
 

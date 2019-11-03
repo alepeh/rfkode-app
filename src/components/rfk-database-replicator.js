@@ -3,7 +3,7 @@ import { db } from "../components/database.js";
 import "@vaadin/vaadin-custom-field/vaadin-custom-field.js"
 import "@vaadin/vaadin-button/vaadin-button.js";
 import { connect } from 'pwa-helpers/connect-mixin.js';
-import { store } from '../store.js';
+import { store } from '../state/store.js';
 import "@vaadin/vaadin-icons/vaadin-icons.js"
 
 export class RfkDatabaseReplicator extends connect(store)(LitElement) {

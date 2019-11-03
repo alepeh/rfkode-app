@@ -8,15 +8,15 @@ import { installMediaQueryWatcher } from 'pwa-helpers/media-query.js';
 import { installOfflineWatcher } from 'pwa-helpers/network.js';
 import { installRouter } from 'pwa-helpers/router.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
-import { menuIcon} from './components/rfk-icons.js';
+import "@vaadin/vaadin-icons/vaadin-icons.js"
 import './components/snack-bar.js';
 import { authenticator } from './components/auth.js'
-import { store } from './store.js';
+import { store } from './state/store.js';
 import {
     navigate,
     updateOffline,
     updateDrawerState
-  } from './actions/app.js';
+  } from './state/actions/app.js';
 
 
 class RfkApp extends connect(store)(LitElement) {
@@ -41,9 +41,9 @@ class RfkApp extends connect(store)(LitElement) {
           <!-- Header -->
           <app-header condenses reveals effects="waterfall">
             <app-toolbar class="toolbar-top">
-              <a href="/table-list">Home</a>
+              <a href="/table-list"><iron-icon icon="vaadin:home-o"></a>
               <div main-title>${this.appTitle}</div>
-              <div><a href="/login">Logged In: ${this._loggedIn ? "Yes" : "No"}</a></div>
+              <div><a href="/login">${this._loggedIn ? html`<iron-icon icon="vaadin:user-check">` : html`<iron-icon icon="vaadin:sign-in">`}</a></div>
             </app-toolbar>
           </app-header>
           

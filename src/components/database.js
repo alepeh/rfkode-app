@@ -1,7 +1,7 @@
 import "pouchdb/dist/pouchdb.js";
 import * as response from "./ResponseUtils";
-import { store } from '../store.js';
-import { updateSyncState } from '../actions/app.js';
+import { store } from '../state/store.js';
+import { updateSyncState } from '../state/actions/app.js';
 
 class Database {
 

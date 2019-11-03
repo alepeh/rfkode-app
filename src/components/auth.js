@@ -1,7 +1,7 @@
 import createAuth0Client from '@auth0/auth0-spa-js';
-import { store } from '../store.js';
+import { store } from '../state/store.js';
 // These are the actions needed by this element.
-import { updateLoginState } from '../actions/app.js';
+import { updateLoginState } from '../state/actions/app.js';
 
 class Auth {
 

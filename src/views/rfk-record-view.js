@@ -5,8 +5,6 @@ import { RfkRecordForm } from '../components/rfk-record-form.js';
 import { RfkAttachments } from '../components/rfk-attachments.js';
 import { db } from '../components/database.js';
 import "@vaadin/vaadin-button/vaadin-button.js";
-import { store } from '../store.js';
-import { navigate } from '../actions/app.js';
 
 class RfkRecordView extends PageViewElement {
     static get styles() {
@@ -138,8 +136,6 @@ class RfkRecordView extends PageViewElement {
             this._setGlobalParametersAndLoadData(relatedSchema, relatedRecordId, 'edit');
         }
         this.requestUpdate();
-        //history.pushState()
-        //store.dispatch(navigate(decodeURIComponent('record-form?tableName='+relatedSchema+'&recordId='+relatedRecordId)));
     }
 
     _generateDocument() {

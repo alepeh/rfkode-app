@@ -21,38 +21,38 @@ export const navigate = (path) => (dispatch) => {
 const loadPage = (page) => (dispatch) => {
   switch(page) {
     case 'login':
-      import('../views/rfk-login-view').then((module) => {
+      import('../../views/rfk-login-view').then((module) => {
         // Put code in here that you want to run every time when
         // navigating to view1 after my-view1.js is loaded.
       });
       break;
     case 'settings':
-      import('../views/rfk-settings-view').then((module) => {
+      import('../../views/rfk-settings-view').then((module) => {
         // Put code in here that you want to run every time when
         // navigating to view1 after my-view1.js is loaded.
       });
       break;
       case 'table-list':
-        import('../views/rfk-table-list').then((module) => {
+        import('../../views/rfk-table-list').then((module) => {
           // Put code in here that you want to run every time when
           // navigating to view1 after my-view1.js is loaded.
         });
         break;
         case 'table':
-          import('../views/rfk-table').then((module) => {
+          import('../../views/rfk-table').then((module) => {
             // Put code in here that you want to run every time when
             // navigating to view1 after my-view1.js is loaded.
           });
           break;
         case 'record-form':
-            import('../views/rfk-record-view').then((module) => {
+            import('../../views/rfk-record-view').then((module) => {
               // Put code in here that you want to run every time when
               // navigating to view1 after my-view1.js is loaded.
             });
             break;
     default:
       page = 'view404';
-      import('../views/my-view404');
+      import('../../views/my-view404');
   }
   dispatch(updatePage(page));
 };

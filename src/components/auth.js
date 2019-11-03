@@ -12,7 +12,7 @@ class Auth {
     async _configureClient() {
         this.auth0 = await createAuth0Client({
             domain: "dev-dzzf-al0.eu.auth0.com",
-            clientId: "l5Ttrvjjt21czQJROZK1EaBdoQ8BRasi",
+            client_id: "l5Ttrvjjt21czQJROZK1EaBdoQ8BRasi",
             audience : "https://lake.alexanderpehm.at"
         });
     };

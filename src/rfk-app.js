@@ -43,14 +43,13 @@ class RfkApp extends connect(store)(LitElement) {
             <app-toolbar class="toolbar-top">
               <a href="/table-list"><iron-icon icon="vaadin:home-o"></a>
               <div main-title>${this.appTitle}</div>
-              <div><a href="/login">${this._loggedIn ? html`<iron-icon icon="vaadin:user-check">` : html`<iron-icon icon="vaadin:sign-in">`}</a></div>
+              <div><a href="/settings">${this._loggedIn ? html`<iron-icon icon="vaadin:user-check">` : html`<iron-icon icon="vaadin:sign-in">`}</a></div>
             </app-toolbar>
           </app-header>
           
     
           <!-- Main content -->
           <main role="main" class="main-content">
-            <rfk-login-view class="page" ?active="${this._page === 'login'}"></rfk-login-view>
             <rfk-settings-view class="page" ?active="${this._page === 'settings'}"></rfk-settings-view>
             <rfk-table-list class="page" ?active="${this._page === 'table-list'}"></rfk-table-list>
             <rfk-table class="page" ?active="${this._page === 'table'}"></rfk-table>
@@ -84,7 +83,6 @@ class RfkApp extends connect(store)(LitElement) {
       }
     
       stateChanged(state) {
-        console.dir(state);
         this._page = state.app.page;
         this._offline = state.app.offline;
         this._snackbarOpened = state.app.snackbarOpened;

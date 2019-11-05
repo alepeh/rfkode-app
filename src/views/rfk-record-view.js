@@ -2,6 +2,7 @@ import { html, css } from "lit-element";
 import { PageViewElement } from "../components/page-view-element";
 import { SharedStyles } from '../components/shared-styles.js';
 import { RfkRecordForm } from '../components/rfk-record-form.js';
+import { RfkRelationshipSelectionForm } from '../components/rfk-relationship-selection-form.js';
 import { RfkAttachments } from '../components/rfk-attachments.js';
 import { db } from '../components/database.js';
 import "@vaadin/vaadin-button/vaadin-button.js";
@@ -54,9 +55,9 @@ class RfkRecordView extends PageViewElement {
         }
     }
 
-    _setGlobalParametersAndLoadData(tableName, recordId, action) {
+    _setGlobalParametersAndLoadData(tableName, recordId, action, initialFieldData) {
         this._setGlobalParameters(tableName, recordId, action);
-        this._loadData(tableName, recordId, action);
+        this._loadData(tableName, recordId, action, initialFieldData);
     }
 
     _setGlobalParameters(tableName, recordId, action) {
@@ -65,7 +66,7 @@ class RfkRecordView extends PageViewElement {
         this.action = action;
     }
 
-    async _loadData(schemaId, recordId, action) {
+    async _loadData(schemaId, recordId, action, initialFieldData) {
         await db.getDocument(schemaId).then((schema) => {
             this.schema = schema;
         });
@@ -73,7 +74,12 @@ class RfkRecordView extends PageViewElement {
            If present, and the action is 'add', we create a new one using the id.
            If no id is given, we create a new id as well. */
         if (recordId && action === 'add') {
+            console.log("InitialFieldData: " + initialFieldData);
             this.recordData = { _id: this.recordId };
+            if(initialFieldData){
+                console.log("Initial Field Data: " + initialFieldData.field + ", " + initialFieldData.value);
+                this.recordData[initialFieldData.field] = initialFieldData.value;
+            }
         }
         else if (recordId && (action === 'edit')) {
             await db.getDocument(recordId, { attachments: true }).then((document) => {
@@ -84,6 +90,11 @@ class RfkRecordView extends PageViewElement {
             this.recordId = newDocId;
             this.recordData = { _id: this.recordId };
         }
+    }
+
+    _extractSchemaNameFromSchemaId(schemaId){
+        const schemaIdParts = schemaId.split(':');
+        return schemaIdParts[1];
     }
 
     _generateNewDocumentId(schemaId) {
@@ -101,12 +112,14 @@ class RfkRecordView extends PageViewElement {
             <div id="content-container">
                 <div id="content-wrap">
                     <rfk-record-form @record-updated="${(e) => { this.recordUpdated(e.detail) }}"
-                        @relationship-selected="${(e) => { this._relationshipSelected(e.detail) }}"
+                        @relationship-selection-requested="${(e) => { this._relationshipSelection(e.detail) }}"
+                        @relationship-view-requested="${(e) => { this._relationshipView(e.detail) }}"
                         @record-attachment-updated=${(e) => { this.recordAttachmentUpdated(e.detail) }}"
                         schema='${JSON.stringify(this.schema)}'
                         recordData='${JSON.stringify(this.recordData)}'>
                     </rfk-record-form>
                     <rfk-attachments attachments='${JSON.stringify(this.recordData._attachments)}'></rfk-attachments>
+                    <rfk-relationship-selection-form id="relForm" @relationship-selected="${(e) => this._linkRelationship(e)}"></rfk-relationship-selection-form>
                 </div>
             </div>
             <footer>
@@ -119,23 +132,79 @@ class RfkRecordView extends PageViewElement {
         }
     }
 
-    _relationshipSelected(selectionEvent) {
-        console.dir(selectionEvent);
+    /**
+     * opens a modal dialog to create a new or select an existing relationship
+     */
+    async _relationshipSelection(selectionEvent) {
         const relationship = selectionEvent.field;
-        let relatedRecordId = this.recordData[relationship];
+        //open the dialog to select an existing/create a new record
+        const relForm = this.shadowRoot.getElementById("relForm");
+        relForm.targets = await this._getRelationshipTargets(relationship);
+        relForm.fieldName = relationship;
+        relForm.opened = true;
+    }
+
+    /**
+     * find all potential targets for this relationship
+     */
+    async _getRelationshipTargets(field){
+        const relatedSchemaName = this.schema.jsonSchema.relationships[field].$ref;
+        const docs = await db.allDocsOfSchema(relatedSchemaName);
+        const relatedSchema = await db.getDocument(relatedSchemaName);
+        let labelProperty = "_id";
+        if(relatedSchema.uiSchema["_label"]){
+            labelProperty = relatedSchema.uiSchema["_label"].property;
+        }
+        if(docs.rows) {
+            return docs.rows.map((doc) => {
+                return {id: doc.doc._id, label: doc.doc[labelProperty]};
+            })
+        }
+    }
+
+    /**
+     * called to navigate to an existing relationship
+     */
+    _relationshipView(selectionevent) {
+        const relationship = selectionevent.field;
         const relatedSchema = this.schema.jsonSchema.relationships[relationship].$ref;
-        if (!relatedRecordId) {
-            console.log("Related record not set, creating new one");
-            relatedRecordId = this._generateNewDocumentId(relatedSchema);
-            //TODO save the new recordId before reloading data
-            this.recordData[relationship] = relatedRecordId;
+        const relatedRecordId = this.recordData[relationship];
+        this._setGlobalParametersAndLoadData(relatedSchema, relatedRecordId, 'edit');
+        this.requestUpdate();
+    }
+
+    _linkRelationship(e) {
+        console.log("relationship selected");
+        console.dir(e);
+        const fieldName = e.detail.field;
+        const existingRelationship = e.detail.value;
+        if(existingRelationship){
+            //oldRelValue, newRelValue
+            this._updateReverseRelationship(this.recordData[fieldName], existingRelationship);
+            this.recordData[fieldName] = existingRelationship;
             this._save();
-            this._setGlobalParametersAndLoadData(relatedSchema, relatedRecordId, 'add');
         }
         else {
-            this._setGlobalParametersAndLoadData(relatedSchema, relatedRecordId, 'edit');
+            const relatedSchema = this.schema.jsonSchema.relationships[fieldName].$ref;
+            const relatedRecordId = this._generateNewDocumentId(relatedSchema);
+            //TODO save the new recordId before reloading data
+            this.recordData[fieldName] = relatedRecordId;
+            this._save();
+            this._setGlobalParametersAndLoadData(relatedSchema, relatedRecordId, 'add', {field: this._extractSchemaNameFromSchemaId(this.tableName), value: this.recordId});
+            this.requestUpdate();
         }
-        this.requestUpdate();
+    }
+
+    _updateReverseRelationship(oldRelatedDocumentId, newRelatedDocumentId){
+        console.log("New RelatedDocument: " + newRelatedDocumentId);
+        db.getDocument(oldRelatedDocumentId).then(doc => {
+            doc[this._extractSchemaNameFromSchemaId(this.tableName)] = "";
+            db.put(doc).then(() => console.log("Cleared old Related Doc"));
+        });
+        db.getDocument(newRelatedDocumentId).then(doc => {
+            doc[this._extractSchemaNameFromSchemaId(this.tableName)] = this.recordId;
+            db.put(doc).then(() => console.log("Saved New Related Doc"));
+        });
     }
 
     _generateDocument() {

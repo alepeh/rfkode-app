@@ -35,11 +35,14 @@
                 },
                   booleanProperty: {
                     type: "boolean"
-                }
+                },
+                  numberProperty: {
+                    type: "number"
+                  }
               }
             }
           }
-          const data = { stringProperty : "string", booleanProperty : true}
+          const data = { stringProperty : "string", booleanProperty : true, numberProperty: 42}
           el.setAttribute('schema',JSON.stringify(schema));
           el.setAttribute('recordData',JSON.stringify(data));
           // Make tests wait until element is rendered.
@@ -56,6 +59,12 @@
           const elementShadowRoot = el.shadowRoot;
           const attachmentItem = elementShadowRoot.querySelector('vaadin-checkbox');
           assert.equal(attachmentItem.hasAttribute('checked'),true);
+        });
+
+        test('number type is rendered as number field', () => {
+          const elementShadowRoot = el.shadowRoot;
+          const number = elementShadowRoot.querySelector('vaadin-number-field');
+          assert.equal(number.value,42);
         });
 
       });

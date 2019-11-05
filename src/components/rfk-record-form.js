@@ -1,5 +1,6 @@
 import { html, css, LitElement } from "lit-element";
 import "@vaadin/vaadin-text-field/vaadin-password-field.js";
+import "@vaadin/vaadin-text-field/vaadin-number-field.js"
 import "@vaadin/vaadin-text-field/vaadin-text-area.js";
 import "@vaadin/vaadin-upload/vaadin-upload.js";
 import "@vaadin/vaadin-date-picker/vaadin-date-picker.js"
@@ -22,7 +23,8 @@ export class RfkRecordForm extends LitElement {
     static get styles() {
         return [
             css`
-            vaadin-text-field, vaadin-text-area {
+            vaadin-text-field, vaadin-text-area, 
+            vaadin-text-area, vaadin-number-field, vaadin-select {
                 width: 100%;
             }
             vaadin-text-area {
@@ -56,8 +58,13 @@ export class RfkRecordForm extends LitElement {
                     <label for=${id}>${id}</label>
                     <input type="file" id=${id} @change=${e => this.fileSelected(e,id)}></input>`;
             case 'selectRelated' :
-                return html`<p>
-                <vaadin-button id=${id} @click="${e => this._relationshipSelected(id)}">${this.recordData[id] ? 'Show ' + id : 'New ' + id}</vaadin-button></p>`;
+                return html`<p><label for=${id}>${id}</label>
+                ${this.recordData[id]
+                    ? html`<vaadin-button id=${id} @click="${e => this._viewRelationship(id)}">View</vaadin-button>`
+                    : html``
+                }
+                    <vaadin-button id=${id} @click="${e => this._selectRelationship(id)}">Select</vaadin-button>
+                </p>`;
             default: 
                 return html`
                     <vaadin-text-field label=${id} id="${id}" .value=${this.recordData ? data : ''} @change=${e => this.inputChanged(e.target.value,id)}>
@@ -69,12 +76,19 @@ export class RfkRecordForm extends LitElement {
         switch(widgetDescriptor.jsonSchema.type){
             case 'string': return this.produceTextWidget(widgetDescriptor);
             case 'boolean': return this.produceCheckboxWidget(widgetDescriptor);
+            case 'number': return this.produceNumberWidget(widgetDescriptor);
         }
     }
 
     produceCheckboxWidget(widgetDescriptor){
         return html`
         <vaadin-checkbox ?checked=${widgetDescriptor.data ? widgetDescriptor.data : false} @change=${e => this.inputChanged((e.target.hasAttribute('checked') ? true : false),widgetDescriptor.id)}>${widgetDescriptor.id}</vaadin-checkbox>
+        `;
+    }
+
+    produceNumberWidget(widgetDescriptor){
+        return html`
+        <vaadin-number-field label=${widgetDescriptor.id} id=${widgetDescriptor.id} .value=${widgetDescriptor.data ? widgetDescriptor.data : ''} @change=${e => this.inputChanged(e.target.value,widgetDescriptor.id)}></vaadin-number-field>
         `;
     }
 
@@ -125,8 +139,16 @@ export class RfkRecordForm extends LitElement {
         this.dispatchEvent(updateEvent);
     }
 
-    _relationshipSelected(field){
-        let selectionEvent = new CustomEvent('relationship-selected', {
+    _selectRelationship(field){
+        let selectionEvent = new CustomEvent('relationship-selection-requested', {
+            detail: {field: field},
+            bubbles: true
+        });
+        this.dispatchEvent(selectionEvent);
+    }
+
+    _viewRelationship(field){
+        let selectionEvent = new CustomEvent('relationship-view-requested', {
             detail: {field: field},
             bubbles: true
         });

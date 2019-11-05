@@ -3,9 +3,10 @@ import "@vaadin/vaadin-text-field/vaadin-password-field.js";
 import "@vaadin/vaadin-text-field/vaadin-number-field.js"
 import "@vaadin/vaadin-text-field/vaadin-text-area.js";
 import "@vaadin/vaadin-upload/vaadin-upload.js";
-import "@vaadin/vaadin-date-picker/vaadin-date-picker.js"
-import "@vaadin/vaadin-select/vaadin-select.js"
-import "@vaadin/vaadin-checkbox/vaadin-checkbox.js"
+import "@vaadin/vaadin-date-picker/vaadin-date-picker.js";
+import "@vaadin/vaadin-select/vaadin-select.js";
+import "@vaadin/vaadin-checkbox/vaadin-checkbox.js";
+import "@vaadin/vaadin-checkbox/vaadin-checkbox-group.js";
 
 export class RfkRecordForm extends LitElement {
 
@@ -75,9 +76,22 @@ export class RfkRecordForm extends LitElement {
     widgetFor(widgetDescriptor) {
         switch(widgetDescriptor.jsonSchema.type){
             case 'string': return this.produceTextWidget(widgetDescriptor);
+            case 'array': return this.produceSelectMultipleWidget(widgetDescriptor);
             case 'boolean': return this.produceCheckboxWidget(widgetDescriptor);
             case 'number': return this.produceNumberWidget(widgetDescriptor);
         }
+    }
+
+    produceSelectMultipleWidget(widgetDescriptor){
+        return html`
+        <vaadin-checkbox-group label=${widgetDescriptor.id} .value=${widgetDescriptor.data ? widgetDescriptor.data : []} @value-changed=${e => this.inputChanged(e.target.value,widgetDescriptor.id)}>
+            ${widgetDescriptor.jsonSchema.items.enum.map(option => {
+                return html`
+                    <vaadin-checkbox value=${option}>${option}</vaadin-checkbox>
+                `;
+            })}
+        </vaadin-checkbox-group>
+        `;
     }
 
     produceCheckboxWidget(widgetDescriptor){

@@ -41,9 +41,9 @@ class RfkApp extends connect(store)(LitElement) {
           <!-- Header -->
           <app-header condenses reveals effects="waterfall">
             <app-toolbar class="toolbar-top">
-              <a href="/table-list"><iron-icon icon="vaadin:home-o"></a>
+              <div @click=${() => store.dispatch(navigate("/table-list"))}><iron-icon icon="vaadin:home-o"></iron-icon></div>
               <div main-title>${this.appTitle}</div>
-              <div><a href="/settings">${this._loggedIn ? html`<iron-icon icon="vaadin:user-check">` : html`<iron-icon icon="vaadin:sign-in">`}</a></div>
+              <div @click=${() => store.dispatch(navigate("/settings"))}>${this._loggedIn ? html`<iron-icon icon="vaadin:user-check">` : html`<iron-icon icon="vaadin:sign-in">`}</iron-icon></div>
             </app-toolbar>
           </app-header>
           

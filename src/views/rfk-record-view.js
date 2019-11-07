@@ -33,8 +33,8 @@ class RfkRecordView extends PageViewElement {
 
     static get properties() {
         return {
-            tableName: { type: String },
-            recordId: { type: String },
+            schemaDocId: { type: String },
+            docId: { type: String },
             recordData: { type: Object },
             attachmentData: { type: Object }
         }
@@ -51,7 +51,7 @@ class RfkRecordView extends PageViewElement {
         super.attributeChangedCallback(name, oldValue, newValue);
         if (name === 'active' && newValue != null) {
             let params = new URLSearchParams(document.location.search.substring(1));
-            this._setGlobalParametersAndLoadData(params.get("tableName"), params.get("recordId"), params.get("action"));
+            this._setGlobalParametersAndLoadData(params.get("schemaDocId"), params.get("docId"), params.get("action"));
         }
     }
 

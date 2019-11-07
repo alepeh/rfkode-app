@@ -1,21 +1,22 @@
 export const UPDATE_PAGE = 'UPDATE_PAGE';
 export const UPDATE_OFFLINE = 'UPDATE_OFFLINE';
-export const UPDATE_DRAWER_STATE = 'UPDATE_DRAWER_STATE';
 export const OPEN_SNACKBAR = 'OPEN_SNACKBAR';
 export const CLOSE_SNACKBAR = 'CLOSE_SNACKBAR';
 export const LOGIN = 'LOGIN';
 export const UPDATE_SYNC_STATE = 'UPDATE_SYNC_STATE';
 
-export const navigate = (path) => (dispatch) => {
+export const navigate = (location) => (dispatch) => {
+  //action has been dispatched programmatically, we need to reflect that in the history
+  if (location != (window.location.pathname + window.location.search)) {
+    window.history.pushState({}, '', location);
+  }
+  const searchIndex = location.indexOf('?');
+  let path = searchIndex > 0 ? location.slice(1, searchIndex) : location.slice(1);
   // Extract the page name from path.
-  const page = path === '/' ? 'table-list' : path.slice(1);
-
+  const page = location === '/' ? 'table-list' : path;
   // Any other info you might want to extract from the path (like page type),
   // you can do here
   dispatch(loadPage(page));
-
-  // Close the drawer - in case the *path* change came from a link in the drawer.
-  dispatch(updateDrawerState(false));
 };
 
 const loadPage = (page) => (dispatch) => {
@@ -28,8 +29,7 @@ const loadPage = (page) => (dispatch) => {
       break;
       case 'table-list':
         import('../../views/rfk-table-list').then((module) => {
-          // Put code in here that you want to run every time when
-          // navigating to view1 after my-view1.js is loaded.
+          console.dir(module);
         });
         break;
         case 'table':
@@ -40,8 +40,6 @@ const loadPage = (page) => (dispatch) => {
           break;
         case 'record-form':
             import('../../views/rfk-record-view').then((module) => {
-              // Put code in here that you want to run every time when
-              // navigating to view1 after my-view1.js is loaded.
             });
             break;
     default:
@@ -55,7 +53,7 @@ const updatePage = (page) => {
   return {
     type: UPDATE_PAGE,
     page
-  };
+    };
 };
 
 let snackbarTimer;
@@ -78,13 +76,6 @@ export const updateOffline = (offline) => (dispatch, getState) => {
     type: UPDATE_OFFLINE,
     offline
   });
-};
-
-export const updateDrawerState = (opened) => {
-  return {
-    type: UPDATE_DRAWER_STATE,
-    opened
-  };
 };
 
 export const updateLoginState = (authContext) => {

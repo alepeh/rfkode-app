@@ -15,7 +15,6 @@ import { store } from './state/store.js';
 import {
     navigate,
     updateOffline,
-    updateDrawerState
   } from './state/actions/app.js';
 
 
@@ -25,7 +24,6 @@ class RfkApp extends connect(store)(LitElement) {
         return {
           appTitle: { type: String },
           _page: { type: String },
-          _drawerOpened: { type: Boolean },
           _snackbarOpened: { type: Boolean },
           _offline: { type: Boolean },
           _loggedIn: { type: Boolean}
@@ -64,10 +62,8 @@ class RfkApp extends connect(store)(LitElement) {
       }
 
       firstUpdated() {
-        installRouter((location) => store.dispatch(navigate(decodeURIComponent(location.pathname))));
+        installRouter((location) => store.dispatch(navigate((location.pathname + location.search))));
         installOfflineWatcher((offline) => store.dispatch(updateOffline(offline)));
-        installMediaQueryWatcher(`(min-width: 460px)`,
-            () => store.dispatch(updateDrawerState(false)));
         authenticator.getTokenSilently();
       }
     
@@ -107,10 +103,6 @@ class RfkApp extends connect(store)(LitElement) {
               --app-header-background-color: white;
               --app-header-text-color: var(--app-dark-text-color);
               --app-header-selected-color: var(--app-primary-color);
-    
-              --app-drawer-background-color: var(--app-secondary-color);
-              --app-drawer-text-color: var(--app-light-text-color);
-              --app-drawer-selected-color: #78909C;
             }
     
             app-header {

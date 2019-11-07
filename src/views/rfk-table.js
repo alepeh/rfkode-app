@@ -50,7 +50,7 @@ class RfkTable extends PageViewElement {
     updated(changedProperties){
         const columns = this.shadowRoot.querySelectorAll('vaadin-grid-column');
         columns[0].renderer = function(root, column, rowData) {
-              root.innerHTML = `<div style="white-space: normal"><a href="/record-form?tableName=${rowData.item.schema}&recordId=${rowData.item._id}&action=edit">
+              root.innerHTML = `<div style="white-space: normal"><a href="/record-form?schemaDocId=${rowData.item.schema}&docId=${rowData.item._id}&action=edit">
                 <iron-icon icon="vaadin:edit"></iron-icon>
               </a></div>`;
           };

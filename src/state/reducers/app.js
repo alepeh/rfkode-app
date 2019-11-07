@@ -3,7 +3,6 @@ import {
     UPDATE_OFFLINE,
     OPEN_SNACKBAR,
     CLOSE_SNACKBAR,
-    UPDATE_DRAWER_STATE,
     LOGIN,
     UPDATE_SYNC_STATE
   } from '../actions/app.js';
@@ -11,7 +10,6 @@ import {
   const INITIAL_STATE = {
     page: '',
     offline: false,
-    drawerOpened: false,
     snackbarOpened: false,
     loggedIn: false,
     syncState: 'PENDING'
@@ -22,17 +20,12 @@ import {
       case UPDATE_PAGE:
         return {
           ...state,
-          page: action.page
+          page: action.page,
         };
       case UPDATE_OFFLINE:
         return {
           ...state,
           offline: action.offline
-        };
-      case UPDATE_DRAWER_STATE:
-        return {
-          ...state,
-          drawerOpened: action.opened
         };
       case OPEN_SNACKBAR:
         return {

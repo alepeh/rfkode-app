@@ -7,6 +7,7 @@ import "@vaadin/vaadin-date-picker/vaadin-date-picker.js";
 import "@vaadin/vaadin-select/vaadin-select.js";
 import "@vaadin/vaadin-checkbox/vaadin-checkbox.js";
 import "@vaadin/vaadin-checkbox/vaadin-checkbox-group.js";
+import { RfkSignature } from '../components/rfk-signature.js';
 
 export class RfkRecordForm extends LitElement {
 
@@ -58,6 +59,8 @@ export class RfkRecordForm extends LitElement {
                 return html`
                     <label for=${id}>${id}</label>
                     <input type="file" id=${id} @change=${e => this.fileSelected(e,id)}></input>`;
+            case 'signature' :
+                return html`<rfk-signature>ggg</rfk-signature>`;
             case 'selectRelated' :
                 return html`<p><label for=${id}>${id}</label>
                 ${this.recordData[id]

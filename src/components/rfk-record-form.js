@@ -60,7 +60,7 @@ export class RfkRecordForm extends LitElement {
                     <label for=${id}>${id}</label>
                     <input type="file" id=${id} @change=${e => this.fileSelected(e,id)}></input>`;
             case 'signature' :
-                return html`<rfk-signature>ggg</rfk-signature>`;
+                return html`<rfk-signature @signature-change=${e => this._attachmentUpdated(id, e.detail.file)}></rfk-signature>`;
             case 'selectRelated' :
                 return html`<p><label for=${id}>${id}</label>
                 ${this.recordData[id]
@@ -173,9 +173,13 @@ export class RfkRecordForm extends LitElement {
     }
 
     fileSelected(e,field){
-        let file = this.shadowRoot.getElementById(field).files[0]
+        let file = this.shadowRoot.getElementById(field).files[0];
+        this._attachmentUpdated(field, file);
+    }
+
+    _attachmentUpdated(fieldName, file){
         let updateEvent = new CustomEvent('record-attachment-updated', {
-            detail: {field: field, value: file},
+            detail: {field: fieldName, value: file},
             bubbles: true
         });
         this.dispatchEvent(updateEvent);

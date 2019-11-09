@@ -118,7 +118,10 @@ class RfkRecordView extends PageViewElement {
                         schema='${JSON.stringify(this.schema)}'
                         recordData='${JSON.stringify(this.recordData)}'>
                     </rfk-record-form>
-                    <rfk-attachments attachments='${JSON.stringify(this.recordData._attachments)}'></rfk-attachments>
+                    ${this.recordData._attachments
+                        ? html`<rfk-attachments attachments='${JSON.stringify(this.recordData._attachments)}'></rfk-attachments>`
+                        : ``
+                    }
                     <rfk-relationship-selection-form id="relForm" @relationship-selected="${(e) => this._linkRelationship(e)}"></rfk-relationship-selection-form>
                 </div>
             </div>

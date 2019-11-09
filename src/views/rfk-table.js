@@ -79,7 +79,7 @@ class RfkTable extends PageViewElement {
         return html`
             <section>
                 <h2>Table ${this.tableName} <a href="/record-form?schemaDocId=schema:schema:v1&docId=${this.schema._id}&action=edit"><iron-icon icon="vaadin:edit"></iron-icon></a>
-                <a href="/record-form?tableName=${this.schema._id}"><iron-icon icon="vaadin:plus"></iron-icon></a>
+                <a href="/record-form?schemaDocId=${this.schema._id}"><iron-icon icon="vaadin:plus"></iron-icon></a>
                 </h2>
 
                 <vaadin-grid id="grid" theme="compact column-borders">

@@ -1,5 +1,5 @@
 import { html, LitElement } from 'lit-element';
-import { db } from "../components/database.js";
+import { db } from "../components/db/database.js";
 import "@vaadin/vaadin-custom-field/vaadin-custom-field.js"
 import "@vaadin/vaadin-button/vaadin-button.js";
 import { connect } from 'pwa-helpers/connect-mixin.js';

@@ -1,4 +1,4 @@
-import { db } from '../components/database.js';
+import { db } from '../components/db/database.js';
 import { html, css } from 'lit-element'
 import { PageViewElement } from '../components/page-view-element';
 import { SharedStyles } from '../components/shared-styles.js';

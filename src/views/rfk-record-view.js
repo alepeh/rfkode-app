@@ -4,7 +4,7 @@ import { SharedStyles } from '../components/shared-styles.js';
 import { RfkRecordForm } from '../components/rfk-record-form.js';
 import { RfkRelationshipSelectionForm } from '../components/rfk-relationship-selection-form.js';
 import { RfkAttachments } from '../components/rfk-attachments.js';
-import { db } from '../components/database.js';
+import { db } from '../components/db/database.js';
 import "@vaadin/vaadin-button/vaadin-button.js";
 
 class RfkRecordView extends PageViewElement {
@@ -75,7 +75,7 @@ class RfkRecordView extends PageViewElement {
            If no id is given, we create a new id as well. */
         if (recordId && action === 'add') {
             console.log("InitialFieldData: " + initialFieldData);
-            this.recordData = { _id: this.recordId };
+            this.recordData = { _id: this.recordId, schemaDocId: this.schemaId };
             if(initialFieldData){
                 console.log("Initial Field Data: " + initialFieldData.field + ", " + initialFieldData.value);
                 this.recordData[initialFieldData.field] = initialFieldData.value;

@@ -1,6 +1,6 @@
 import { html } from 'lit-element';
 import { PageViewElement } from '../components/page-view-element.js';
-import { db } from '../components/database.js';
+import { db } from '../components/db/database.js';
 
 // These are the shared styles needed by this element.
 import { SharedStyles } from '../components/shared-styles.js';

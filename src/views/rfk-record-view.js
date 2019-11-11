@@ -127,12 +127,19 @@ class RfkRecordView extends PageViewElement {
             </div>
             <footer>
                 <vaadin-button id="saveBtn" disabled @click="${() => this._save()}">Save</vaadin-button>
+                <vaadin-button id="deleteBtn" @click=${() => this._deleteDocument()}><iron-icon icon="vaadin:trash"></iron-icon></vaadin-button>
                 <vaadin-button id="mergeBtn" @click="${() => this._generateDocument()}">Generate Document</vaadin-button>
             </footer>
             `;
         } else {
             return html`<b>Schema is not defined (yet)!</b>`;
         }
+    }
+
+    _deleteDocument(document){
+        db.removeDocument(this.recordData._id, this.recordData._rev).then(_ => {
+            window.history.back();
+        })
     }
 
     /**

@@ -1,17 +1,21 @@
 import RelationshipResolver  from '../../../src/components/db/relationship-resolver.js';
 
-it('relationship references are replaced with the full object, two levels deep', () => {
+it('level 1 relationship references are replaced with the full object', () => {
     return new RelationshipResolver(new MockDatabase()).expandRelations(rootDoc)
         .then(expandedObject => {
-            console.log(expandedObject);
             expect(expandedObject['rel1']).toBe(rel1Doc);
+        });    
+});
+
+it('level 2 relationship references are replaced with the full object', () => {
+    return new RelationshipResolver(new MockDatabase()).expandRelations(rootDoc)
+        .then(expandedObject => {
             expect(expandedObject['rel1']['rel2']).toBe(rel2Doc);
         });    
 });
 
 class MockDatabase {
     getDocument(id, options){
-        console.log(id);
         let doc;
         if( id === rootDoc._id) doc = rootDoc;
         if( id === rootSchemaDoc._id) doc = rootSchemaDoc;

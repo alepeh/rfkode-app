@@ -60,6 +60,10 @@ class Database {
         return this.localDb.get(id, {attachments : true});
     }
 
+    removeDocument(id, rev){
+        return this.localDb.remove(id, rev);
+    }
+
     allDocsOfSchema(schemaId){
         let schemaName = schemaId.split(':')[1];
         console.log("schema name: " + schemaName);

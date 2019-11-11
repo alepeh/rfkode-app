@@ -4,7 +4,9 @@ import { SharedStyles } from '../components/shared-styles.js';
 import { RfkRecordForm } from '../components/rfk-record-form.js';
 import { RfkRelationshipSelectionForm } from '../components/rfk-relationship-selection-form.js';
 import { RfkAttachments } from '../components/rfk-attachments.js';
+import { RfkHttpAction } from '../components/rfk-http-action.js';
 import { db } from '../components/db/database.js';
+
 import "@vaadin/vaadin-button/vaadin-button.js";
 
 class RfkRecordView extends PageViewElement {
@@ -75,7 +77,7 @@ class RfkRecordView extends PageViewElement {
            If no id is given, we create a new id as well. */
         if (recordId && action === 'add') {
             console.log("InitialFieldData: " + initialFieldData);
-            this.recordData = { _id: this.recordId, schemaDocId: this.schemaId };
+            this.recordData = { _id: this.recordId, schemaDocId: this.schema._id };
             if(initialFieldData){
                 console.log("Initial Field Data: " + initialFieldData.field + ", " + initialFieldData.value);
                 this.recordData[initialFieldData.field] = initialFieldData.value;
@@ -88,7 +90,7 @@ class RfkRecordView extends PageViewElement {
         } else if (!recordId) {
             const newDocId = this._generateNewDocumentId(this.schema._id);
             this.recordId = newDocId;
-            this.recordData = { _id: this.recordId };
+            this.recordData = { _id: this.recordId, schemaDocId: this.schema._id };
         }
     }
 
@@ -128,7 +130,9 @@ class RfkRecordView extends PageViewElement {
             <footer>
                 <vaadin-button id="saveBtn" disabled @click="${() => this._save()}">Save</vaadin-button>
                 <vaadin-button id="deleteBtn" @click=${() => this._deleteDocument()}><iron-icon icon="vaadin:trash"></iron-icon></vaadin-button>
-                <vaadin-button id="mergeBtn" @click="${() => this._generateDocument()}">Generate Document</vaadin-button>
+                ${(this.schema.actions && this.schema.actions['http'])
+                    ? html`<rfk-http-action data=${JSON.stringify(this.recordData)} options=${JSON.stringify(this.schema.actions.http)}></rfk-http-action>`
+                    : ``}
             </footer>
             `;
         } else {
@@ -217,45 +221,6 @@ class RfkRecordView extends PageViewElement {
         });
     }
 
-    _generateDocument() {
-        const mergeconfiguration = this.schema.actions['generateDocument'];
-        const payload = {
-            template: mergeconfiguration.templateName,
-            data: this.recordData,
-            options: mergeconfiguration.options
-        };
-
-        /* replace all relationshipIds with the full object data */
-        let promises = [];
-
-        Object.keys(this.schema.jsonSchema.relationships).map((relationship) => {
-            promises.push(db.getDocument(this.recordData[relationship]).then((recordData) => {
-                console.log("Related record:");
-                console.dir(recordData);
-                payload.data[relationship] = recordData;
-            })
-            )
-        });
-
-        console.log("Calling document merge with the following payload");
-        console.log(payload);
-        
-        Promise.all(promises).then(_ => {
-            fetch('http://localhost:4000/reports', {
-                method: "POST",
-                mode: "cors",
-                headers: {
-                    "Content-type": "application/json; charset=UTF-8"
-                },
-                body: JSON.stringify(payload)
-            }).then((response) => {
-                console.log(response);
-            }).catch((err) => {
-                console.error(err);
-            })
-        });
-    }
-
     recordUpdated(updateEvent) {
         this._enableSaveButton();
         this.recordData[updateEvent.field] = updateEvent.value;
@@ -293,6 +258,7 @@ class RfkRecordView extends PageViewElement {
     _saveSuccessful() {
         this._getSaveButton().innerHTML = `Saved`;
         this._disableSaveButton();
+        this.requestUpdate();
     }
 
     _errorSaving() {

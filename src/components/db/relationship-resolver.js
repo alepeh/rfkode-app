@@ -5,6 +5,7 @@ export default class RelationshipResolver {
     }
 
     expandRelations(document){
+        console.log(document)
         let promises = [];
         promises.push(this.database.getDocument(document.schemaDocId).then(schema => {
             Object.keys(schema.jsonSchema.relationships).map((relationship) => {

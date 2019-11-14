@@ -4,6 +4,9 @@ import { PageViewElement } from '../components/page-view-element';
 import { SharedStyles } from '../components/shared-styles.js';
 import "@vaadin/vaadin-grid/all-imports.js"
 import "@vaadin/vaadin-icons/vaadin-icons.js"
+import "@vaadin/vaadin-button/vaadin-button.js";
+import { store } from '../state/store.js';
+import { navigate } from '../state/actions/app.js';
 
 class RfkTable extends PageViewElement {
 
@@ -62,6 +65,7 @@ class RfkTable extends PageViewElement {
             return doc;
         })
         grid.items = gridItems;
+        grid.addEventListener('active-item-changed', this._documentSelected);
         console.log("grid-defined");
     }
 
@@ -75,23 +79,28 @@ class RfkTable extends PageViewElement {
         });
     }
 
+    _documentSelected(event){
+        const item = event.detail.value;
+        console.log(item);
+        grid.selectedItems = item ? [item] : [];
+        store.dispatch(navigate("/record-form?schemaDocId="+event.detail.value.schemaDocId+"&docId="+event.detail.value._id+"&action=edit"));
+    }
+
     render() {
         return html`
-            <section>
-                <h2>Table ${this.tableName} <a href="/record-form?schemaDocId=schema:schema:v1&docId=${this.schema._id}&action=edit"><iron-icon icon="vaadin:edit"></iron-icon></a>
-                <a href="/record-form?schemaDocId=${this.schema._id}"><iron-icon icon="vaadin:plus"></iron-icon></a>
-                </h2>
-
+                ${this.tableName} <vaadin-button @click=${() => store.dispatch(navigate("/record-form?schemaDocId=schema:schema:v1&docId="+this.schema._id+"&action=edit"))}><iron-icon icon="vaadin:edit"></iron-icon></vaadin-button>
+                <vaadin-button @click=${() => store.dispatch(navigate("/record-form?schemaDocId="+this.schema._id))}><iron-icon icon="vaadin:plus"></iron-icon></vaadin-button>
+                ${this.schema.jsonSchema.properties ? 
+                html`
                 <vaadin-grid id="grid" theme="compact column-borders">
                 <vaadin-grid-column auto-width path="edit" header="edit"></vaadin-grid-column>
                 ${Object.keys(this.schema.jsonSchema.properties).map(
                     (field) => html`
-                    <vaadin-grid-sort-column auto-width path="${field}" header="${field}"></vaadin-grid-sort-column>
+                    <vaadin-grid-filter-column auto-width path="${field}" header="${field}"></vaadin-grid-filter-column>
                     `
                   )}                    
                 </vaadin-grid>
-            </section>
-            `;
+                ` : ``}`;
     }
 }
 window.customElements.define('rfk-table', RfkTable);

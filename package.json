@@ -18,6 +18,7 @@
   "homepage": "https://github.com/alepeh/rfkode-app#readme",
   "dependencies": {
     "@auth0/auth0-spa-js": "^1.2.4",
+    "@material/mwc-fab": "^0.10.0",
     "@polymer/app-layout": "^3.1.0",
     "@vaadin/vaadin": "^14.0.1",
     "@webcomponents/webcomponentsjs": "^2.2.10",

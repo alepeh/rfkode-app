@@ -51,13 +51,6 @@ class RfkTable extends PageViewElement {
     }
 
     updated(changedProperties){
-        const columns = this.shadowRoot.querySelectorAll('vaadin-grid-column');
-        columns[0].renderer = function(root, column, rowData) {
-              root.innerHTML = `<div style="white-space: normal"><a href="/record-form?schemaDocId=${rowData.item.schema}&docId=${rowData.item._id}&action=edit">
-                <iron-icon icon="vaadin:edit"></iron-icon></a>
-              </div>`;
-          };
-
         const grid = this.shadowRoot.getElementById('grid');
         const gridItems = this.records.rows.map(row => {
             let doc = row.doc;
@@ -93,7 +86,6 @@ class RfkTable extends PageViewElement {
                 ${this.schema.jsonSchema.properties ? 
                 html`
                 <vaadin-grid id="grid" theme="compact column-borders">
-                <vaadin-grid-column auto-width path="edit" header="edit"></vaadin-grid-column>
                 ${Object.keys(this.schema.jsonSchema.properties).map(
                     (field) => html`
                     <vaadin-grid-filter-column auto-width path="${field}" header="${field}"></vaadin-grid-filter-column>

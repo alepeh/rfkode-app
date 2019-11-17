@@ -8,7 +8,7 @@ import "@vaadin/vaadin-item/vaadin-item.js"
 import "@vaadin/vaadin-text-field/vaadin-text-field.js";
 import "@vaadin/vaadin-button/vaadin-button.js";
 
-export class RfkTableList extends PageViewElement {
+export class RfkTableListView extends PageViewElement {
   static get styles() {
     return [
       SharedStyles
@@ -67,4 +67,4 @@ export class RfkTableList extends PageViewElement {
     }
     
 }
-window.customElements.define('rfk-table-list', RfkTableList);
+window.customElements.define('rfk-table-list-view', RfkTableListView);

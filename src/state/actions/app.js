@@ -28,12 +28,12 @@ const loadPage = (page) => (dispatch) => {
       });
       break;
       case 'table-list':
-        import('../../views/rfk-table-list').then((module) => {
+        import('../../views/rfk-table-list-view').then((module) => {
           console.dir(module);
         });
         break;
         case 'table':
-          import('../../views/rfk-table').then((module) => {
+          import('../../views/rfk-table-view').then((module) => {
             // Put code in here that you want to run every time when
             // navigating to view1 after my-view1.js is loaded.
           });

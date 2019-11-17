@@ -8,7 +8,7 @@ import "@vaadin/vaadin-button/vaadin-button.js";
 import { store } from '../state/store.js';
 import { navigate } from '../state/actions/app.js';
 
-class RfkTable extends PageViewElement {
+class RfkTableView extends PageViewElement {
 
       static get styles() {
         return [
@@ -95,4 +95,4 @@ class RfkTable extends PageViewElement {
                 ` : ``}`;
     }
 }
-window.customElements.define('rfk-table', RfkTable);
+window.customElements.define('rfk-table-view', RfkTableView);

@@ -7,6 +7,8 @@ import "@vaadin/vaadin-date-picker/vaadin-date-picker.js";
 import "@vaadin/vaadin-select/vaadin-select.js";
 import "@vaadin/vaadin-checkbox/vaadin-checkbox.js";
 import "@vaadin/vaadin-checkbox/vaadin-checkbox-group.js";
+import "@vaadin/vaadin-custom-field/vaadin-custom-field.js"
+import "@vaadin/vaadin-list-box/vaadin-list-box.js"
 import { RfkSignature } from '../components/rfk-signature.js';
 
 export class RfkRecordForm extends LitElement {
@@ -60,7 +62,9 @@ export class RfkRecordForm extends LitElement {
                     <label for=${id}>${id}</label>
                     <input type="file" id=${id} @change=${e => this.fileSelected(e,id)}></input>`;
             case 'signature' :
-                return html`<rfk-signature @signature-change=${e => this._attachmentUpdated(id, e.detail.file)}></rfk-signature>`;
+                return html`
+                    <rfk-signature label=${id} id=${id} @signature-change=${e => this._attachmentUpdated(id, e.detail.file)}>
+                    </rfk-signature>`;
             case 'selectRelated' :
                 return html`<p><label for=${id}>${id}</label>
                 ${this.recordData[id]
@@ -99,7 +103,11 @@ export class RfkRecordForm extends LitElement {
 
     produceCheckboxWidget(widgetDescriptor){
         return html`
-        <vaadin-checkbox ?checked=${widgetDescriptor.data ? widgetDescriptor.data : false} @change=${e => this.inputChanged((e.target.hasAttribute('checked') ? true : false),widgetDescriptor.id)}>${widgetDescriptor.id}</vaadin-checkbox>
+        <diV>
+        <vaadin-custom-field label="${widgetDescriptor.id}">
+            <vaadin-checkbox ?checked=${widgetDescriptor.data ? widgetDescriptor.data : false} @change=${e => this.inputChanged((e.target.hasAttribute('checked') ? true : false),widgetDescriptor.id)}></vaadin-checkbox>
+        </vaadin-custom-field>
+        </div>
         `;
     }
 
@@ -149,11 +157,15 @@ export class RfkRecordForm extends LitElement {
     }
 
     inputChanged(val,field){
-        let updateEvent = new CustomEvent('record-updated', {
-            detail: {field: field, value: val},
-            bubbles: true
-        });
-        this.dispatchEvent(updateEvent);
+        const oldValue = this.recordData[field];
+        //update event is only fired when old and new value differs
+        if(val != oldValue){
+            let updateEvent = new CustomEvent('record-updated', {
+                detail: {field: field, value: val},
+                bubbles: true
+            });
+            this.dispatchEvent(updateEvent);
+        }
     }
 
     _selectRelationship(field){

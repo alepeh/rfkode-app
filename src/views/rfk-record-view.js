@@ -4,7 +4,7 @@ import { SharedStyles } from '../components/shared-styles.js';
 import { RfkRecordForm } from '../components/rfk-record-form.js';
 import { RfkRelationshipSelectionForm } from '../components/rfk-relationship-selection-form.js';
 import { RfkAttachments } from '../components/rfk-attachments.js';
-import { RfkHttpAction } from '../components/rfk-http-action.js';
+import { RfkHttpAction } from '../actions/rfk-http-action.js';
 import { db } from '../components/db/database.js';
 
 import "@vaadin/vaadin-button/vaadin-button.js";
@@ -222,6 +222,8 @@ class RfkRecordView extends PageViewElement {
     }
 
     recordUpdated(updateEvent) {
+        console.log("Update event fired!")
+        console.dir(updateEvent);
         this._enableSaveButton();
         this.recordData[updateEvent.field] = updateEvent.value;
         console.dir(this.recordData);
@@ -272,6 +274,7 @@ class RfkRecordView extends PageViewElement {
     }
 
     _enableSaveButton() {
+        console.log("Somebody enable me!");
         this._getSaveButton().innerHTML = `Save`;
         this._getSaveButton().removeAttribute("disabled");
     }

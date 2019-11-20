@@ -130,14 +130,23 @@ class RfkRecordView extends PageViewElement {
             <footer>
                 <vaadin-button id="saveBtn" disabled @click="${() => this._save()}">Save</vaadin-button>
                 <vaadin-button id="deleteBtn" @click=${() => this._deleteDocument()}><iron-icon icon="vaadin:trash"></iron-icon></vaadin-button>
-                ${(this.schema.actions && this.schema.actions['http'])
-                    ? html`<rfk-http-action data=${JSON.stringify(this.recordData)} options=${JSON.stringify(this.schema.actions.http)}></rfk-http-action>`
+                ${(this.schema.actions)
+                    ? this._renderActions()
                     : ``}
-            </footer>
-            `;
+            </footer>`;
         } else {
             return html`<b>Schema is not defined (yet)!</b>`;
         }
+    }
+
+    _renderActions(){
+        console.log("Rendering actions");
+        return Object.keys(this.schema.actions).map(
+            (action) => {
+                //this.produceWidget(row, this.schema.uiSchema ? this.schema.uiSchema[row] : null, this.recordData ? this.recordData[row] : '');
+                return html`<rfk-http-action data=${JSON.stringify(this.recordData)} actionConfig=${JSON.stringify(this.schema.actions[action])}></rfk-http-action>`;
+            }
+        )
     }
 
     _deleteDocument(document){

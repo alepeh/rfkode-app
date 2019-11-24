@@ -4,11 +4,21 @@ import RelationshipResolver from '../components/db/relationship-resolver.js';
 import { db } from '../components/db/database.js';
 
 export class RfkHttpAction extends LitElement {
-    
+        /*
+        {payload, metadata : {
+            template : {
+                key : ""
+            },
+            output : {
+                bucket: "",
+                key: ""
+            }
+        }}
+    */
     static get properties() {
         return {
             data: { type: Object },
-            options : { type: Object}
+            actionConfig : { type: Object}
         }
     }
 
@@ -17,8 +27,9 @@ export class RfkHttpAction extends LitElement {
     }
 
     render(){
+        console.log("Action Config " + this.actionConfig);
         return html`
-            <vaadin-button @click="${() => this._submit()}">${(this.options && this.options.name) ? this.options.name : 'Senden'}</vaadin-button>
+            <vaadin-button @click="${() => this._submit()}">${(this.actionConfig && this.actionConfig.title) ? this.actionConfig.title : 'Senden'}</vaadin-button>
         `;
     }
 
@@ -26,16 +37,17 @@ export class RfkHttpAction extends LitElement {
             console.log("Expanding object")
             new RelationshipResolver(db).expandRelations(this.data).then((expandedDoc) => {
                 console.log(expandedDoc);
-                fetch(this.options.config.url, {
-                method: this.options.config.method,
+                fetch(this.actionConfig.config.url, {
+                method: this.actionConfig.config.method,
                 mode: "cors",
                 headers: {
                     "Content-type": "application/json; charset=UTF-8"
                 },
-                body: JSON.stringify({payload: expandedDoc, metadata: this.options.metadata})
+                body: JSON.stringify({payload: expandedDoc, metadata: this.actionConfig.metadata})
             }).then((response) => {
                 console.log(response);
             }).catch((err) => {
+                this.shadowRoot.querySelector('vaadin-button').innerHTML = 'Error';
                 console.error(err);
             })
             });

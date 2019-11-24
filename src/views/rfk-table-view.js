@@ -34,14 +34,15 @@ class RfkTableView extends PageViewElement {
 
     constructor() {
         super();
-        //this.order = { field: 'DATUM', direction: 'desc'};
         this.table = {};
         this.schema = {};
+        this.useNewFormEditor;
     }
 
     attributeChangedCallback(name,oldValue, newValue){
         super.attributeChangedCallback(name, oldValue, newValue);
         if(name === 'active' && newValue != null){
+            console.log(this.useNewFormEditor);
             let params = new URLSearchParams(document.location.search.substring(1));
             let tableNameParam = params.get("name");
             this.tableName = tableNameParam;
@@ -74,9 +75,11 @@ class RfkTableView extends PageViewElement {
 
     _documentSelected(event){
         const item = event.detail.value;
-        console.log(item);
         grid.selectedItems = item ? [item] : [];
-        store.dispatch(navigate("/record-form?schemaDocId="+event.detail.value.schemaDocId+"&docId="+event.detail.value._id+"&action=edit"));
+        const useNewFormEditor = store.getState().app.useNewFormEditor;
+        const formEditor = (useNewFormEditor ? '/form' : '/record-form');
+        console.log("Form Editor: " + formEditor);
+        store.dispatch(navigate(formEditor + "?schemaDocId="+event.detail.value.schemaDocId+"&docId="+event.detail.value._id+"&action=edit"));
     }
 
     render() {

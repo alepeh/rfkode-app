@@ -6,6 +6,11 @@ import "jwt-decode/build/jwt-decode.js";
 import { authenticator } from "../components/auth.js"
 import { RfkDatabaseReplicator } from '../components/rfk-database-replicator';
 import "@vaadin/vaadin-button/vaadin-button.js";
+import "@vaadin/vaadin-checkbox/vaadin-checkbox.js";
+import { store } from '../state/store.js';
+import {
+    useNewFormEditor
+  } from '../state/actions/app.js';
 
 class RfkSettingView extends PageViewElement {
 
@@ -23,7 +28,8 @@ class RfkSettingView extends PageViewElement {
 
     static get properties() {
         return {
-            isAuthenticated: { type: String }
+            isAuthenticated: { type: String },
+            useNewFormEditor: { type: Boolean}
         }
     }
 
@@ -31,6 +37,7 @@ class RfkSettingView extends PageViewElement {
         super.attributeChangedCallback(name, oldValue, newValue);
         if (name === 'active' && newValue != null) {
             console.log("isActive");
+            this.useNewFormEditor = store.getState()["useNewFormEditor"];
             const query = window.location.search;
             if (query.includes("code=") && query.includes("state=")) {
                 await authenticator.handleRedirectCallback();
@@ -47,7 +54,16 @@ class RfkSettingView extends PageViewElement {
         return html`
         <vaadin-button id="btn-login" ?disabled=${this.isAuthenticated} @click=${() => this.login()}>Log in</vaadin-button>
         <rfk-database-replicator></rfk-database-replicator>
+        <diV>
+        <vaadin-custom-field label="Use New Form Editor">
+            <vaadin-checkbox ?checked=${this.useNewFormEditor} @change=${e => this._useNewEditorConfig((e.target.hasAttribute('checked') ? true : false))}></vaadin-checkbox>
+        </vaadin-custom-field>
+        </div>
         `;
+    }
+
+    _useNewEditorConfig(toggle){
+        store.dispatch(useNewFormEditor(toggle));
     }
 
     login() {

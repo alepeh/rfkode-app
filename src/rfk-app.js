@@ -52,6 +52,7 @@ class RfkApp extends connect(store)(LitElement) {
             <rfk-table-list-view class="page" ?active="${this._page === 'table-list'}"></rfk-table-list-view>
             <rfk-table-view class="page" ?active="${this._page === 'table'}"></rfk-table-view>
             <rfk-record-view class="page" ?active="${this._page === 'record-form'}"></rfk-record-view>
+            <rfk-form-view class="page" ?active="${this._page === 'form'}"></rfk-form-view>
             <my-view404 class="page" ?active="${this._page === 'view404'}"></my-view404>
            </main>
 

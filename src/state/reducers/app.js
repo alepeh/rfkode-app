@@ -4,7 +4,8 @@ import {
     OPEN_SNACKBAR,
     CLOSE_SNACKBAR,
     LOGIN,
-    UPDATE_SYNC_STATE
+    UPDATE_SYNC_STATE,
+    USE_NEW_FORM_EDITOR
   } from '../actions/app.js';
   
   const INITIAL_STATE = {
@@ -51,6 +52,11 @@ import {
           syncState: action.syncState,
           syncError: action.syncError
         };
+      case USE_NEW_FORM_EDITOR:
+        return {
+          ...state,
+          useNewFormEditor: action.useNewFormEditor
+        }
       default:
         return state;
     }

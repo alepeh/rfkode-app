@@ -48,7 +48,6 @@ export class RfkRecordForm extends LitElement {
 
     produceWidget(id, uiSchema, data){
         if (!uiSchema){
-            console.log("no special ui schema")
             return this.widgetFor({jsonSchema: this.schema.jsonSchema.properties[id], uiOptions: this.schema.uiSchema ? this.schema.uiSchema[id] : '', id : id, data : this.recordData ? this.recordData[id] : ''});
         }
         switch(uiSchema.widget){
@@ -73,6 +72,16 @@ export class RfkRecordForm extends LitElement {
                 }
                     <vaadin-button id=${id} @click="${e => this._selectRelationship(id)}">Select</vaadin-button>
                 </p>`;
+            case 'selectMultipleRelated' : 
+                return html`
+                <p><label for=${id}>${id}</label>
+                ${this.recordData[id]
+                    ? html`<vaadin-button id=${id} @click="${e => this._viewRelationship(id)}">View</vaadin-button>`
+                    : html``
+                }
+                    <vaadin-button id=${id} @click="${e => this._selectRelationship(id)}">Select</vaadin-button>
+                </p>
+                `;
             default: 
                 return html`
                     <vaadin-text-field label=${id} id="${id}" .value=${this.recordData ? data : ''} @change=${e => this.inputChanged(e.target.value,id)}>
@@ -90,15 +99,20 @@ export class RfkRecordForm extends LitElement {
     }
 
     produceSelectMultipleWidget(widgetDescriptor){
-        return html`
-        <vaadin-checkbox-group label=${widgetDescriptor.id} .value=${widgetDescriptor.data ? widgetDescriptor.data : []} @value-changed=${e => this.inputChanged(e.target.value,widgetDescriptor.id)}>
-            ${widgetDescriptor.jsonSchema.items.enum.map(option => {
-                return html`
-                    <vaadin-checkbox value=${option}>${option}</vaadin-checkbox>
-                `;
-            })}
-        </vaadin-checkbox-group>
-        `;
+        if(widgetDescriptor.jsonSchema.items.enum){
+            return html`
+            <vaadin-checkbox-group label=${widgetDescriptor.id} .value=${widgetDescriptor.data ? widgetDescriptor.data : []} @value-changed=${e => this.inputChanged(e.target.value,widgetDescriptor.id)}>
+                ${widgetDescriptor.jsonSchema.items.enum.map(option => {
+                    return html`
+                        <vaadin-checkbox value=${option}>${option}</vaadin-checkbox>
+                    `;
+                })}
+            </vaadin-checkbox-group>
+            `;
+        }
+        if(widgetDescriptor.jsonSchema.items.format === "relationship"){
+            console.log("Multiple Relationships field!");
+        }
     }
 
     produceCheckboxWidget(widgetDescriptor){

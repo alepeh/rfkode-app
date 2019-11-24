@@ -4,6 +4,7 @@ export const OPEN_SNACKBAR = 'OPEN_SNACKBAR';
 export const CLOSE_SNACKBAR = 'CLOSE_SNACKBAR';
 export const LOGIN = 'LOGIN';
 export const UPDATE_SYNC_STATE = 'UPDATE_SYNC_STATE';
+export const USE_NEW_FORM_EDITOR ='USE_NEW_FORM_EDITOR';
 
 export const navigate = (location) => (dispatch) => {
   //action has been dispatched programmatically, we need to reflect that in the history
@@ -40,6 +41,10 @@ const loadPage = (page) => (dispatch) => {
           break;
         case 'record-form':
             import('../../views/rfk-record-view').then((module) => {
+            });
+            break;
+        case 'form':
+            import('../../views/rfk-form-view').then((module) => {
             });
             break;
     default:
@@ -92,5 +97,12 @@ export const updateSyncState = (syncState) => {
     type: UPDATE_SYNC_STATE,
     syncState : syncState.state,
     syncError : syncState.error
+  };
+};
+
+export const useNewFormEditor = (editorToggle) => {
+  return {
+    type: USE_NEW_FORM_EDITOR,
+    useNewFormEditor : editorToggle
   };
 };

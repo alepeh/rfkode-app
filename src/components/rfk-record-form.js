@@ -73,15 +73,7 @@ export class RfkRecordForm extends LitElement {
                     <vaadin-button id=${id} @click="${e => this._selectRelationship(id)}">Select</vaadin-button>
                 </p>`;
             case 'selectMultipleRelated' : 
-                return html`
-                <p><label for=${id}>${id}</label>
-                ${this.recordData[id]
-                    ? html`<vaadin-button id=${id} @click="${e => this._viewRelationship(id)}">View</vaadin-button>`
-                    : html``
-                }
-                    <vaadin-button id=${id} @click="${e => this._selectRelationship(id)}">Select</vaadin-button>
-                </p>
-                `;
+                return this.produceSelectMultipleRelatedWidget(id);
             default: 
                 return html`
                     <vaadin-text-field label=${id} id="${id}" .value=${this.recordData ? data : ''} @change=${e => this.inputChanged(e.target.value,id)}>
@@ -96,6 +88,18 @@ export class RfkRecordForm extends LitElement {
             case 'boolean': return this.produceCheckboxWidget(widgetDescriptor);
             case 'number': return this.produceNumberWidget(widgetDescriptor);
         }
+    }
+
+    produceSelectMultipleRelatedWidget(id){
+        console.log(this.recordData[id]);
+        return html`<p><div><label for=${id}>${id}</label>
+        <vaadin-button @click="${e => this._addRelationship(id)}">+</vaadin-button>
+        </div>
+        ${this.recordData[id] 
+            ? html`${this.recordData[id].map(relatedRecord => {
+                return html`<vaadin-button @click="${e => this._viewRelationship(id)}">View</vaadin-button>`;
+            })}` : html``
+        }`;
     }
 
     produceSelectMultipleWidget(widgetDescriptor){
@@ -180,6 +184,14 @@ export class RfkRecordForm extends LitElement {
             });
             this.dispatchEvent(updateEvent);
         }
+    }
+
+    _addRelationship(field){
+        let selectionEvent = new CustomEvent('relationship-selection-requested', {
+            detail: {field: field},
+            bubbles: true
+        });
+        this.dispatchEvent(selectionEvent);     
     }
 
     _selectRelationship(field){

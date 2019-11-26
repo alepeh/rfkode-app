@@ -204,17 +204,29 @@ class RfkRecordView extends PageViewElement {
         if(existingRelationship){
             //oldRelValue, newRelValue
             this._updateReverseRelationship(this.recordData[fieldName], existingRelationship);
-            this.recordData[fieldName] = existingRelationship;
+            this._updateRelationship(fieldName, existingRelationship);
             this._save();
         }
         else {
             const relatedSchema = this.schema.jsonSchema.relationships[fieldName].$ref;
             const relatedRecordId = this._generateNewDocumentId(relatedSchema);
             //TODO save the new recordId before reloading data
-            this.recordData[fieldName] = relatedRecordId;
+            this._updateRelationship(fieldName, relatedRecordId);
+
             this._save();
             this._setGlobalParametersAndLoadData(relatedSchema, relatedRecordId, 'add', {field: this._extractSchemaNameFromSchemaId(this.tableName), value: this.recordId});
             this.requestUpdate();
+        }
+    }
+
+    _updateRelationship(fieldName, relatedDocId){
+        //in case of a multiple select field, we need to update the array of related records
+        console.log(fieldName);
+        if(this.schema.jsonSchema.properties[fieldName].type === 'array'){
+            this.recordData[fieldName] ? this.recordData[fieldName].push(relatedDocId)
+                                       : this.recordData[fieldName] = [relatedDocId];
+        } else {
+            this.recordData[fieldName] = relatedDocId;
         }
     }
 

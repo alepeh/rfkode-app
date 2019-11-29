@@ -190,8 +190,12 @@ class RfkRecordView extends PageViewElement {
      */
     _relationshipView(selectionevent) {
         const relationship = selectionevent.field;
+        const relatedRecordId = selectionevent.documentId;
+        if(! relatedRecordId){
+            console.log("Single Selection Field");
+            relatedRecordId = this.recordData[relationship];
+        }
         const relatedSchema = this.schema.jsonSchema.relationships[relationship].$ref;
-        const relatedRecordId = this.recordData[relationship];
         this._setGlobalParametersAndLoadData(relatedSchema, relatedRecordId, 'edit');
         this.requestUpdate();
     }

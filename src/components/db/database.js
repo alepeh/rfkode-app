@@ -11,13 +11,13 @@ class Database {
 
     sync(token) {
         const remoteDbUrl = this._extractRemoteDbUrlFromToken(token);
+        const authSession = this._extractAuthSessionFromToken(token);
+        console.log(remoteDbUrl);
+
         const remoteDb = new PouchDB(remoteDbUrl, {
-            fetch: function (url, opts) {
-              opts.headers.set('Authorization', 'Bearer ' + token);
-              return PouchDB.fetch(url, opts);
-            }
+            auth: authSession,
           });
-            this.localDb.sync(remoteDb, {live: true, retry: true})
+        this.localDb.sync(remoteDb, {live: true, retry: true})
                 .on('change', (info) => {
                 this._syncLog('change');
               }).on('paused', (err) => {
@@ -35,9 +35,20 @@ class Database {
     }
 
     _extractRemoteDbUrlFromToken(token){
+        return this._decodeTokenPayload(token)['https://rfkode.alexanderpehm.at/cloudant_db_url'];
+    }
+
+    _extractAuthSessionFromToken(token){
+        let auth = {};
+        auth.username = this._decodeTokenPayload(token)['https://rfkode.alexanderpehm.at/remote_db_username'];
+        auth.password = this._decodeTokenPayload(token)['https://rfkode.alexanderpehm.at/remote_db_password'];
+        return auth;
+    }
+
+
+    _decodeTokenPayload(token){
         const tokenPayload = token.split('.')[1];
-        const decodedPayload = JSON.parse(window.atob(tokenPayload));
-        return decodedPayload['https://rfkode.alexanderpehm.at/remote_db_url'];
+        return JSON.parse(window.atob(tokenPayload));
     }
 
     _syncLog(action, detail){

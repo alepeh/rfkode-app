@@ -97,7 +97,7 @@ export class RfkRecordForm extends LitElement {
         </div>
         ${this.recordData[id] 
             ? html`${this.recordData[id].map(relatedRecord => {
-                return html`<vaadin-button @click="${e => this._viewRelationship(id)}">View</vaadin-button>`;
+                return html`<vaadin-button @click="${e => this._viewRelationship(id, relatedRecord)}">View</vaadin-button>`;
             })}` : html``
         }`;
     }
@@ -202,9 +202,10 @@ export class RfkRecordForm extends LitElement {
         this.dispatchEvent(selectionEvent);
     }
 
-    _viewRelationship(field){
+    //related record is only passed when we have a multi-select option
+    _viewRelationship(field, relatedRecord){
         let selectionEvent = new CustomEvent('relationship-view-requested', {
-            detail: {field: field},
+            detail: {field: field, documentId: relatedRecord},
             bubbles: true
         });
         this.dispatchEvent(selectionEvent);

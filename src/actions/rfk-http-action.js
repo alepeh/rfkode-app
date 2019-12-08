@@ -35,6 +35,7 @@ export class RfkHttpAction extends LitElement {
 
     _submit(){
             console.log("Expanding object")
+            this._replaceConcatVariables();
             new RelationshipResolver(db).expandRelations(this.data).then((expandedDoc) => {
                 console.log(expandedDoc);
                 fetch(this.actionConfig.config.url, {
@@ -51,6 +52,28 @@ export class RfkHttpAction extends LitElement {
                 console.error(err);
             })
             });
+    }
+
+    _replaceConcatVariables(){
+        //TODO this is only usable for the metadata.output.key property atm.
+        if(this.actionConfig && this.actionConfig.metadata && this.actionConfig.metadata.output){
+            let key = this.actionConfig.metadata.output['key'];
+            if(key.includes("CONCAT(")){
+                let replacedKey;
+                key = key.replace("CONCAT(","");
+                key = key.replace(")","");
+                let parts = key.split(',').map(part => {
+                    if(part.startsWith('d.')){
+                        return this.data[part.substring(2)];
+                    }
+                    else return part;
+                })
+                replacedKey = parts.toString().replace(/,/g,'');
+                console.log(replacedKey);
+                this.actionConfig.metadata.output['key'] = replacedKey;
+            }
+            
+        }
     }
 }
 window.customElements.define('rfk-http-action', RfkHttpAction);

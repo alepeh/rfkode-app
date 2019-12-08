@@ -5,6 +5,8 @@ import { RfkRelationshipSelectionForm } from '../components/rfk-relationship-sel
 import { RfkAttachments } from '../components/rfk-attachments.js';
 import { RfkHttpAction } from '../actions/rfk-http-action.js';
 import { db } from '../components/db/database.js';
+//import 'rfkode-form';
+import { defineCustomElements } from 'rfkode-form/loader';
 
 import "@vaadin/vaadin-button/vaadin-button.js";
 
@@ -45,6 +47,7 @@ class RfkFormView extends PageViewElement {
         super();
         this.schema;
         this.action;
+        defineCustomElements(window);
     }
 
     updated(changedProperties){
@@ -100,6 +103,7 @@ class RfkFormView extends PageViewElement {
         const form = this.shadowRoot.querySelector('rfkode-form');
         console.log(form);
         form.data = this.recordData;
+        form.schema = this.schema;
     }
 
     _extractSchemaNameFromSchemaId(schemaId){
@@ -121,7 +125,7 @@ class RfkFormView extends PageViewElement {
             return html`
             <div id="content-container">
                 <div id="content-wrap">
-                    <rfkode-form></rfkode-form>
+                    <rfkode-form @dataChanged=${(e) => { this.recordUpdated(e.detail) }}></rfkode-form>
                     <!-- <rfk-record-form @record-updated="${(e) => { this.recordUpdated(e.detail) }}"
                         @relationship-selection-requested="${(e) => { this._relationshipSelection(e.detail) }}"
                         @relationship-view-requested="${(e) => { this._relationshipView(e.detail) }}"
@@ -234,7 +238,7 @@ class RfkFormView extends PageViewElement {
         console.log("Update event fired!")
         console.dir(updateEvent);
         this._enableSaveButton();
-        this.recordData[updateEvent.field] = updateEvent.value;
+        this.recordData[updateEvent.property] = updateEvent.value;
         console.dir(this.recordData);
     }
 

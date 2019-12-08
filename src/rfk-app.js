@@ -66,6 +66,7 @@ class RfkApp extends connect(store)(LitElement) {
         installRouter((location) => store.dispatch(navigate((location.pathname + location.search))));
         installOfflineWatcher((offline) => store.dispatch(updateOffline(offline)));
         authenticator.getTokenSilently();
+        //defineCustomElements(window);
       }
     
       updated(changedProps) {

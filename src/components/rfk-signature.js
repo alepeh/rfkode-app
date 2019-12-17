@@ -160,5 +160,6 @@ export class RfkSignature extends LitElement {
         });
         this.dispatchEvent(updateEvent);
     }
+    
 }
 window.customElements.define('rfk-signature', RfkSignature);
